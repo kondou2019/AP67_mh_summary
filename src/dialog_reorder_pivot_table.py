@@ -35,22 +35,33 @@ class DialogReorderPivotTable:
         # コントロール
         ##
         self.frame1 = tk.Frame(self.root)
-        tk.Button(self.frame1, text="並び替え", command=self.on_button_reorder).grid(column=0, row=0)
-        tk.Button(self.frame1, text="全クリア", command=self.on_button_clear_all).grid(column=1, row=0)
-        ##
-        self.frame2 = tk.Frame(self.root)
-        tk.Label(self.frame2, text="チケットのURL", anchor=tkinter.W).grid(column=0, row=0, sticky=tk.EW)
-        self.ticket_url_textbox = tk.Text(self.frame2, height=10)
-        self.ticket_url_textbox.grid(column=0, row=1, sticky=tk.NSEW)
-        ##
-        self.frame3 = tk.Frame(self.root)
-        tk.Label(self.frame3, text="ピボットテーブル", anchor=tkinter.W).grid(column=0, row=0, sticky=tk.EW)
-        self.pivot_table_textbox = tk.Text(self.frame3)
-        self.pivot_table_textbox.grid(column=0, row=1, sticky=tk.NSEW)
+        self.frame1.pack(fill=tk.X)
 
-        self.frame1.pack(side=tk.TOP)
-        self.frame2.pack(expand=True, fill=tk.X)
-        self.frame3.pack(expand=True, fill=tk.X)
+        tk.Button(self.frame1, text="並び替え", command=self.on_button_reorder).pack(side=tk.LEFT)
+        tk.Button(self.frame1, text="全クリア", command=self.on_button_clear_all).pack(side=tk.LEFT)
+        ##
+        self.panel1 = tk.PanedWindow(self.root, orient=tk.VERTICAL, showhandle=True, sashwidth=8)
+        self.panel1.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
+        ### チケットのURL
+        self.frame2 = tk.Frame(self.root)
+        self.frame2.pack(fill=tk.X)
+
+        tk.Label(self.frame2, text="チケットのURL:", anchor=tkinter.W).pack(anchor=tk.W)
+        self.ticket_url_vbar = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
+        self.ticket_url_vbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ticket_url_textbox = tk.Text(self.frame2, height=10, yscrollcommand=self.ticket_url_vbar.set)
+        self.ticket_url_textbox.pack(fill=tk.BOTH, expand=True)
+        self.panel1.add(self.frame2)
+        ### ピボットテーブル
+        self.frame3 = tk.Frame(self.root)
+        self.frame3.pack(fill=tk.X)
+
+        tk.Label(self.frame3, text="ピボットテーブル:").pack(anchor=tk.W)
+        self.pivot_table_vbar = tk.Scrollbar(self.frame3, orient=tk.VERTICAL)
+        self.pivot_table_vbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.pivot_table_textbox = tk.Text(self.frame3, yscrollcommand=self.pivot_table_vbar.set)
+        self.pivot_table_textbox.pack(fill=tk.BOTH, expand=True)
+        self.panel1.add(self.frame3)
 
     # ====================#
     # GUIイベント(button) #

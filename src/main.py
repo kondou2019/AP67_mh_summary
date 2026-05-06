@@ -132,43 +132,50 @@ class MainWindow:
     # GUIイベント,Window #
     # ===================#
     def MainWindow_load(self):
+        def create_menu():
+            # メニュー
+            menu = tkinter.Menu(self.root)
+            ## File
+            menu_file = tkinter.Menu(menu, tearoff=0)
+            menu_file.add_command(label="開く(O)", command=self.on_menu_file_open_click)
+            menu_file.add_command(label="再読込(R)", command=self.on_menu_file_reload_click)
+            menu_file.add_separator()
+            menu_file.add_command(label="終了(E)", command=self.on_menu_file_exit_click)
+            menu.add_cascade(label="ファイル(F)", menu=menu_file)
+            ## Tool
+            menu_tool = tkinter.Menu(menu, tearoff=0)
+            menu_tool.add_command(label="ピボットテーブルの並び替え...", command=self.on_menu_tool_reorder_pivot_click)
+            menu_tool.add_command(
+                label="開始時間でソートの貼り付け", command=self.on_menu_tool_sort_began_time_paste_click
+            )
+            menu_tool.add_separator()
+            menu_tool.add_command(label="tag_configの検証...", command=self.on_menu_tool_tag_config_verify_click)
+            menu.add_cascade(label="ツール(T)", menu=menu_tool)
+
+            ## Debug
+            menu_debug = tkinter.Menu(menu, tearoff=0)
+            menu_debug.add_command(label="パース結果の貼り付け", command=self.on_menu_debug_paste_mht_list_click)
+            menu_debug.add_command(label="jsonの貼り付け", command=self.on_menu_debug_paste_json_click)
+            menu.add_cascade(label="デバッグ(G)", menu=menu_debug)
+
+            ## Help
+            menu_help = tkinter.Menu(menu, tearoff=0)
+            menu_help.add_command(label="...について(A)", command=self.on_menu_help_about_click)
+            menu.add_cascade(label="ヘルプ(H)", menu=menu_help)
+
+            self.root.config(menu=menu)
+
         self.root = tk.Tk()
         self.set_title()
-        self.root.geometry("512x512")
-        # メニュー
-        menu = tkinter.Menu(self.root)
-        ## File
-        menu_file = tkinter.Menu(menu, tearoff=0)
-        menu_file.add_command(label="開く(O)", command=self.on_menu_file_open_click)
-        menu_file.add_command(label="再読込(R)", command=self.on_menu_file_reload_click)
-        menu_file.add_separator()
-        menu_file.add_command(label="終了(E)", command=self.on_menu_file_exit_click)
-        menu.add_cascade(label="ファイル(F)", menu=menu_file)
-        ## Tool
-        menu_tool = tkinter.Menu(menu, tearoff=0)
-        menu_tool.add_command(label="ピボットテーブルの並び替え...", command=self.on_menu_tool_reorder_pivot_click)
-        menu_tool.add_command(label="開始時間でソートの貼り付け", command=self.on_menu_tool_sort_began_time_paste_click)
-        menu_tool.add_separator()
-        menu_tool.add_command(label="tag_configの検証...", command=self.on_menu_tool_tag_config_verify_click)
-        menu.add_cascade(label="ツール(T)", menu=menu_tool)
+        self.root.geometry("576x512")
 
-        ## Debug
-        menu_debug = tkinter.Menu(menu, tearoff=0)
-        menu_debug.add_command(label="パース結果の貼り付け", command=self.on_menu_debug_paste_mht_list_click)
-        menu_debug.add_command(label="jsonの貼り付け", command=self.on_menu_debug_paste_json_click)
-        menu.add_cascade(label="デバッグ(G)", menu=menu_debug)
+        create_menu()
 
-        ## Help
-        menu_help = tkinter.Menu(menu, tearoff=0)
-        menu_help.add_command(label="...について(A)", command=self.on_menu_help_about_click)
-        menu.add_cascade(label="ヘルプ(H)", menu=menu_help)
-
-        self.root.config(menu=menu)
         # メインフレーム
         # main_frm = ttk.Frame(self)
         # コントロール
         self.frame1 = tk.Frame(self.root)
-        self.frame1.pack()
+        self.frame1.pack(fill=tk.X)
         ##
         self.search_button = tk.Button(self.frame1, text="集計", command=self.on_button_exec)
         self.search_button.pack(side=tk.LEFT)  # 設置
@@ -183,28 +190,35 @@ class MainWindow:
         self.csv_header_checkbox = tk.Checkbutton(self.frame1, text="CSVヘッダの有無", variable=self.csv_header_var)
         self.csv_header_checkbox.pack(side=tk.LEFT)
         ##
+        self.panel1 = tk.PanedWindow(self.root, orient=tk.VERTICAL, showhandle=True)
+        self.panel1.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
+
+        ### 集計結果
         self.frame2 = tk.Frame(self.root)
-        self.frame2.pack()
-        # self.task_textbox = tk.Text(self.frame1,width=10,height=5).pack()
+        self.frame2.pack(fill=tk.X)
 
         self.task_vbar = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
         self.task_vbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.task_textbox = tk.Text(self.frame2, yscrollcommand=self.task_vbar.set)
-        self.task_textbox.pack(fill="both", expand=True)
+        self.task_textbox = tk.Text(self.frame2, height=20, yscrollcommand=self.task_vbar.set)
+        self.task_textbox.pack(fill=tk.X, expand=True)
 
         self.task_vbar.config(command=self.task_textbox.yview)
-        # frame1.pack(fill=tk.X)  # フレームそのものを拡張
+
+        self.panel1.add(self.frame2)
+        ### 問題
         self.frame3 = tk.Frame(self.root)
-        self.frame3.pack()
+        self.frame3.pack(fill=tk.X)
 
         self.problem_vbar = tk.Scrollbar(self.frame3, orient=tk.VERTICAL)
         self.problem_vbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.problem_textbox = tk.Text(self.frame3, yscrollcommand=self.problem_vbar.set)
-        self.problem_textbox.pack(fill="both", expand=True)
+        self.problem_textbox.pack(fill=tk.BOTH, expand=True)
 
         self.task_vbar.config(command=self.problem_textbox.yview)
+
+        self.panel1.add(self.frame3)
 
     # ==================#
     # GUIイベント(menu) #

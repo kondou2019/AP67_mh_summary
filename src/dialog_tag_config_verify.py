@@ -42,52 +42,61 @@ class DialogTagConfigVerify:
         # コントロール
         ##
         self.frame1 = tk.Frame(self.root)
-        tk.Button(self.frame1, text="実行", command=self.on_button_execute).grid(column=0, row=0)
-        tk.Button(self.frame1, text="全クリア", command=self.on_button_clear_all).grid(column=1, row=0)
-        ##
+        tk.Button(self.frame1, text="実行", command=self.on_button_execute).pack(side=tk.LEFT)
+        tk.Button(self.frame1, text="全クリア", command=self.on_button_clear_all).pack(side=tk.LEFT)
+        ## サンプル
         self.frame2 = tk.Frame(self.root)
-        tk.Label(self.frame2, text="サンプル:", anchor=tkinter.W).grid(column=0, row=0, sticky=tk.EW)
+        tk.Label(self.frame2, text="サンプル:").pack(anchor=tkinter.W)
         self.sample_textbox = tk.Entry(self.frame2, width=30)
-        self.sample_textbox.grid(column=0, row=1, sticky=tk.NSEW)
-        ##
+        self.sample_textbox.pack(anchor=tkinter.W, fill=tk.X, expand=True)
+        ## match_re
         self.frame3 = tk.Frame(self.root)
-        tk.Label(self.frame3, text="match_re:", anchor=tkinter.W).grid(column=0, row=0, sticky=tk.EW)
+        tk.Label(self.frame3, text="match_re:", anchor=tkinter.W).pack(anchor=tkinter.W)
         self.match_re_textbox = tk.Entry(self.frame3, width=40)
-        self.match_re_textbox.grid(column=0, row=1, sticky=tk.NSEW)
-        tk.Button(self.frame3, text="esc", command=self.on_button_match_re_escape).grid(column=1, row=1)
-        tk.Button(self.frame3, text="une", command=self.on_button_match_re_unescape).grid(column=2, row=1)
+        self.match_re_textbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        tk.Button(self.frame3, text="esc", command=self.on_button_match_re_escape).pack(side=tk.LEFT)
+        tk.Button(self.frame3, text="une", command=self.on_button_match_re_unescape).pack(side=tk.LEFT)
         ## 識別子
         self.frame4 = tk.Frame(self.root)
-        tk.Label(self.frame4, text="identifier_dict:", anchor=tkinter.W).grid(column=0, row=0, sticky=tk.EW)
+        ###
+        self.frame41 = tk.Frame(self.frame4)
+        self.frame41.pack(fill=tk.X)
+        tk.Label(self.frame41, text="identifier_dict:").pack(side=tk.LEFT)
+        ###
+        self.frame42 = tk.Frame(self.frame4)
+        self.frame42.pack(fill=tk.X)
 
-        tk.Label(self.frame4, text="k:", anchor=tkinter.W).grid(column=0, row=1, sticky=tk.EW)
-        self.identifier_dict_k1_textbox = tk.Entry(self.frame4)
-        self.identifier_dict_k1_textbox.grid(column=1, row=1, sticky=tk.NSEW)
-        tk.Label(self.frame4, text="v_re:", anchor=tkinter.W).grid(column=2, row=1, sticky=tk.EW)
-        self.identifier_dict_v1_textbox = tk.Entry(self.frame4)
-        self.identifier_dict_v1_textbox.grid(column=3, row=1, sticky=tk.NSEW)
-        tk.Button(self.frame4, text="esc", command=self.on_button_identifier_dict_v1_escape).grid(column=4, row=1)
-        tk.Button(self.frame4, text="une", command=self.on_button_identifier_dict_v1_unescape).grid(column=5, row=1)
+        tk.Label(self.frame42, text="k:").grid(column=0, row=0)
+        self.identifier_dict_k1_textbox = tk.Entry(self.frame42)
+        self.identifier_dict_k1_textbox.grid(column=1, row=0)
+        tk.Label(self.frame42, text="v_re:").grid(column=2, row=0)
+        self.identifier_dict_v1_textbox = tk.Entry(self.frame42)
+        self.identifier_dict_v1_textbox.grid(column=3, row=0)
+        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_dict_v1_escape).grid(column=4, row=0)
+        tk.Button(self.frame42, text="une", command=self.on_button_identifier_dict_v1_unescape).grid(column=5, row=0)
 
-        tk.Label(self.frame4, text="k:", anchor=tkinter.W).grid(column=0, row=2, sticky=tk.EW)
-        self.identifier_dict_k2_textbox = tk.Entry(self.frame4)
-        self.identifier_dict_k2_textbox.grid(column=1, row=2, sticky=tk.NSEW)
-        tk.Label(self.frame4, text="v_re:", anchor=tkinter.W).grid(column=2, row=2, sticky=tk.EW)
-        self.identifier_dict_v2_textbox = tk.Entry(self.frame4)
-        self.identifier_dict_v2_textbox.grid(column=3, row=2, sticky=tk.NSEW)
-        tk.Button(self.frame4, text="esc", command=self.on_button_identifier_dict_v2_escape).grid(column=4, row=2)
-        tk.Button(self.frame4, text="une", command=self.on_button_identifier_dict_v2_unescape).grid(column=5, row=2)
-        ##
+        tk.Label(self.frame42, text="k:").grid(column=0, row=1)
+        self.identifier_dict_k2_textbox = tk.Entry(self.frame42)
+        self.identifier_dict_k2_textbox.grid(column=1, row=1, sticky=tk.NSEW)
+        tk.Label(self.frame42, text="v_re:").grid(column=2, row=1)
+        self.identifier_dict_v2_textbox = tk.Entry(self.frame42)
+        self.identifier_dict_v2_textbox.grid(column=3, row=1)
+        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_dict_v2_escape).grid(column=4, row=1)
+        tk.Button(self.frame42, text="une", command=self.on_button_identifier_dict_v2_unescape).grid(column=5, row=1)
+        ## 実行結果
         self.frame5 = tk.Frame(self.root)
-        tk.Label(self.frame5, text="実行結果:", anchor=tkinter.W).grid(column=0, row=0, sticky=tk.EW)
-        self.result_textbox = tk.Text(self.frame5)
-        self.result_textbox.grid(column=0, row=1, sticky=tk.NSEW)
+        tk.Label(self.frame5, text="実行結果:").pack(anchor=tk.W)
+        ###
+        self.result_vbar = tk.Scrollbar(self.frame5, orient=tk.VERTICAL)
+        self.result_vbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.result_textbox = tk.Text(self.frame5, yscrollcommand=self.result_vbar.set)
+        self.result_textbox.pack(fill=tk.BOTH, expand=True)
         #
-        self.frame1.pack(side=tk.TOP)
-        self.frame2.pack(expand=True, fill=tk.X)
-        self.frame3.pack(expand=True, fill=tk.X)
-        self.frame4.pack(expand=True, fill=tk.X)
-        self.frame5.pack(expand=True, fill=tk.X)
+        self.frame1.pack(side=tk.TOP, fill=tk.X)
+        self.frame2.pack(fill=tk.X)
+        self.frame3.pack(fill=tk.X)
+        self.frame4.pack(fill=tk.X)
+        self.frame5.pack(fill=tk.X)
 
     # ====================#
     # GUIイベント(button) #
