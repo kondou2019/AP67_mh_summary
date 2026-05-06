@@ -1,0 +1,11 @@
+# Python
+.coverage
+.venv/
+__pycache__/
+*.py[cod]
+
+#
+.vscode/
+tmp/
+*.log
+

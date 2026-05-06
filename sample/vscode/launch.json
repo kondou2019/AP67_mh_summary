@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python デバッガー: main",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "args": [
+                "--config", "tmp/config.json",
+            ],
+            "console": "integratedTerminal"
+        },
+    ]
+}
