@@ -27,7 +27,7 @@ from src.task_categorize import MhTaskCategorize
 from src.task_sort import MhTaskSort
 from src.task_utl import format_mht_list
 
-__VERSION__ = "0.1.0"
+__VERSION__ = "0.1.255"
 
 
 class MainWindow:
