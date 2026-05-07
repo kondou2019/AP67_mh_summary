@@ -1,3 +1,82 @@
 {
-    "version": "0.0.0"
+    "version": "0.0.0",
+    "tag_config": [
+        {
+            "group_name": "ticket",
+            "tag_entry_list": [
+                {
+                    "task_type": "チケット",
+                    "match_re": "^\\[.*\\]",
+                    "description": "",
+                    "sample": "[チケット1]タイトル1",
+                    "identifier_dict" : {
+                        "ticket_id": "^\\[(チケット.*?)\\]"
+                    },
+                    "tag_entry_dict": {
+                        "チケット": "$ticket_id"
+                    }
+                },
+                {
+                    "task_type": "ドキュメントレビュー",
+                    "match_re": "^ドキュメントレビュー;",
+                    "description": "",
+                    "sample": "ドキュメントレビュー;[チケット1]タイトル1",
+                    "identifier_dict" : {
+                        "ticket_id": ";\\[(チケット.*?)\\]"
+                    },
+                    "tag_entry_dict": {
+                        "レビュー": "",
+                        "チケット": "$ticket_id"
+                    }
+                },
+                {
+                    "task_type": "PRレビュー",
+                    "match_re": "^PRレビュー;",
+                    "description": "",
+                    "sample": "PRレビュー;PR# 1;[チケット1]内容",
+                    "identifier_dict" : {
+                        "ticket_id": ";\\[(チケット.*?)\\]",
+                        "pr_id": ";PR#\\s*(\\d+);"
+                    },
+                    "tag_entry_dict": {
+                        "レビュー": "",
+                        "チケット": "$ticket_id",
+                        "pull_request": "$pr_id"
+                    }
+                }
+            ]
+        },
+        {
+            "group_name": "pull_request",
+            "tag_entry_list": [
+                {
+                    "task_type": "PRレビュー",
+                    "match_re": "^PRレビュー;",
+                    "description": "",
+                    "sample": "PRレビュー;PR# 1;内容",
+                    "identifier_dict" : {
+                        "pr_id": ";PR#\\s*(\\d+);"
+                    },
+                    "tag_entry_dict": {
+                        "レビュー": "",
+                        "pull_request": "$pr_id"
+                    }
+                }
+            ]
+        },
+        {
+            "group_name": "general",
+            "tag_entry_list": [
+                {
+                    "task_type": "ドキュメントレビュー",
+                    "match_re": "^ドキュメントレビュー;",
+                    "description": "",
+                    "sample": "ドキュメントレビュー;内容",
+                    "tag_entry_dict": {
+                        "レビュー": ""
+                    }
+                }
+            ]
+        }
+    ]
 }
