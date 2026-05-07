@@ -131,6 +131,7 @@ class MhTaskCategorize:
                         ticket_dict[ticket_id] = mht.task_time
             else:
                 o_stream.write(f"{task_date_column}{mht.line_text}\t\t{mht.task_time}\n")
+        o_stream.write("====チケット作業====\n")
         # 集計項目の出力
         for k, v in ticket_dict.items():
             o_stream.write(f"{task_date_column}{'チケット;担当'}\t{k}\t{v}\n")
