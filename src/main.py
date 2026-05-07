@@ -183,7 +183,7 @@ class MainWindow:
         self.search_button.pack(side=tk.LEFT)  # 設置
         ##
         self.logseq_var = tk.BooleanVar()
-        self.logseq_checkbox = tk.Checkbutton(self.frame1, text="LogSeq", variable=self.logseq_var)
+        self.logseq_checkbox = tk.Checkbutton(self.frame1, text="Logseq", variable=self.logseq_var)
         self.logseq_checkbox.pack(side=tk.LEFT)
         ##
         self.csv_header_var = tk.BooleanVar()
