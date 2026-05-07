@@ -80,7 +80,7 @@ def test_task_add_tag_x99(_test_id: str, line_text: str, tag_expected: dict[str,
     mht = MhTask()
     mht.line_text = line_text
     #
-    config = Config(ticket_id_prefix="チケット")
+    config = Config()
     config.tag_config = [
         TagGroup(
             group_name="ticket",

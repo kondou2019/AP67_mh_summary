@@ -111,7 +111,6 @@ class TagGroup:
 @dataclass
 class Config:
     version: str = ""
-    ticket_id_prefix: Optional[str] = None
     tag_config: Optional[list[TagGroup]] = None
 
 
