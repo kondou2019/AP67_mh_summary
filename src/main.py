@@ -91,7 +91,7 @@ class MainWindow:
             # ファイル名から日付を取得。ex)2023_06_03.md
             filename = file_path.stem
             task_date = filename.replace("_", "/")
-        else:
+        elif len(file_path.suffix):  # その他のファイル形式
             self.logseq_var.set(False)
         # 出力エリアをクリア
         self.task_textbox.delete("1.0", tk.END)
