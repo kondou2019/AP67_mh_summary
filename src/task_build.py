@@ -398,8 +398,17 @@ class MhTaskBuild:
         elif began_only == True:
             # "00:00"
             mht.record_type = MhTaskType.TIMESTAMP
+        elif mht.began_time is not None and mht.ended_time is None:
+            # "00:00-"
+            self.validation_error.append(
+                ValidationError(
+                    level=ERROR,
+                    message='終了時刻が省略されています。"',
+                    mht=mht,
+                )
+            )
         else:
-            # "00:00-","-00:00"
+            # "-00:00"
             mht.record_type = MhTaskType.BEGAN_ENDED
         return mht
 

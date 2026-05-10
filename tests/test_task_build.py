@@ -346,7 +346,6 @@ def test_parse_time_to_time_x9901(
     "_test_id, line, indent_expected, began_expected, ended_expected, type_expected, line_expected",
     [
         ("n0101", "09:00 作業", 0, time(9, 0), None, MhTaskType.TIMESTAMP, "作業"),
-        ("n0102", "09:00- 作業", 0, time(9, 0), None, MhTaskType.BEGAN_ENDED, "作業"),
         (
             "n0103",
             "-10:00 作業",
@@ -417,6 +416,7 @@ def test_task_parse_line_n99xx(
         ("a0303", "00:00:01:00 作業"),  # 範囲記号不正
         ("a0401", "02:00-01:00 作業"),  # 逆転
         ("a0402", "01:00-01:00 作業"),  # 同一
+        ("a0501", "01:00- 作業"),  # 終了時刻の省略
     ],
 )
 def test_task_parse_line_a98xx(
