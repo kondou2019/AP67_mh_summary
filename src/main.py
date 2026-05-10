@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import io
 import json
+import subprocess
 import tkinter
 import tkinter as tk
 from dataclasses import asdict
@@ -150,6 +151,8 @@ class MainWindow:
             )
             menu_tool.add_separator()
             menu_tool.add_command(label="tag_configの検証...", command=self.on_menu_tool_tag_config_verify_click)
+            menu_tool.add_separator()
+            menu_tool.add_command(label="設定ファイルを開く", command=self.on_menu_tool_open_config_click)
             menu.add_cascade(label="ツール(T)", menu=menu_tool)
 
             ## Debug
@@ -270,6 +273,9 @@ class MainWindow:
 
     def on_menu_help_about_click(self) -> None:
         messagebox.showinfo("バージョン情報", f"mh_summary {__VERSION__}")
+
+    def on_menu_tool_open_config_click(self) -> None:
+        subprocess.Popen(["notepad", self.config_path_s])
 
     def on_menu_tool_reorder_pivot_click(self) -> None:
         DialogReorderPivotTable.show_dialog(self.root)
