@@ -170,7 +170,7 @@ class MainWindow:
 
         self.root = tk.Tk()
         self.set_title()
-        self.root.geometry("576x512")
+        self.root.geometry("576x576")
 
         create_menu()
 
@@ -200,6 +200,8 @@ class MainWindow:
         self.frame2 = tk.Frame(self.root)
         self.frame2.pack(fill=tk.X)
 
+        tk.Label(self.frame2, text="集計結果:", anchor=tkinter.W).pack(anchor=tk.W)
+
         self.task_vbar = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
         self.task_vbar.pack(side=tk.RIGHT, fill=tk.Y)
 
@@ -212,6 +214,8 @@ class MainWindow:
         ### 問題
         self.frame3 = tk.Frame(self.root)
         self.frame3.pack(fill=tk.X)
+
+        tk.Label(self.frame3, text="問題:", anchor=tkinter.W).pack(anchor=tk.W)
 
         self.problem_vbar = tk.Scrollbar(self.frame3, orient=tk.VERTICAL)
         self.problem_vbar.pack(side=tk.RIGHT, fill=tk.Y)
