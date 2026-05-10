@@ -216,7 +216,7 @@ def test_validation_overlap_n0203() -> None:  # エラーなし。親タスク�
 def test_validation_within_of_parent_time_range_x99(
     _test_id: str,
     text: str,
-) -> None:  # エラー
+) -> None:  # 正常
     mht_list = make_testdata(text)
     # 実行
     validatior = Validator()
