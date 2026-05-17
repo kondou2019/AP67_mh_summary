@@ -2,7 +2,7 @@ from typing import IO, Optional
 
 import pytest
 
-from src.reorder_pivot_table import reorder_pivot_table
+from src.reorder_pivot_table import ReorderPivotTable
 
 
 def test_reorder_pivot_table_n0101() -> None:
@@ -23,8 +23,8 @@ TICKET-0002	407	6.783333	0	0	0	0
 
 
 """
-
-    result = reorder_pivot_table(ticket_url_text, pivot_table_text)
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
     # assert len(result) == 2
 
 
@@ -44,7 +44,8 @@ TICKET-0002	2
 TICKET-0001	1
 """
     #
-    result = reorder_pivot_table(ticket_url_text, pivot_table_text)
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
     assert result == expeced_text
 
 
@@ -66,45 +67,30 @@ TICKET-0002	2
 TICKET-0001	1
 """,
         ),
-        (  # 作業したチケットが多い;TICKET-0003	3
-            "n0201",
-            """\
-https://jira.abc.com/browse/TICKET-0002
-https://jira.abc.com/browse/TICKET-0001
-""",
-            """\
-TICKET-0001	1
-TICKET-0002	2
-TICKET-0003	3
-""",
-            """\
-TICKET-0002	2
-TICKET-0001	1
-""",
-        ),
-        (  # ticket_urlが多い;TICKET-0003
-            "n0202",
-            """\
-https://jira.abc.com/browse/TICKET-0002
-https://jira.abc.com/browse/TICKET-0003
-https://jira.abc.com/browse/TICKET-0001
-""",
-            """\
-TICKET-0001	1
-TICKET-0002	2
-""",
-            """\
-TICKET-0002	2
-TICKET-0003
-TICKET-0001	1
-""",
-        ),
     ],
 )
 def test_reorder_pivot_table_x9001(
     _test_id: str, ticket_url_text: str, pivot_table_text: str, expeced_text: str
 ) -> None:  # ヘッダ・フッタなし
     #
-    result = reorder_pivot_table(ticket_url_text, pivot_table_text)
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
     assert result == expeced_text
-    pass
+
+
+def test_validation_n0101() -> None:  # エラーなし
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.validation(["TICKET-0001", "TICKET-0002"], {"TICKET-0001": "", "TICKET-0002": ""})
+    assert len(pivot_table.validation_error) == 0
+
+
+def test_validation_a0201() -> None:  # ticket_id_listの重複
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.validation(["TICKET-0001", "TICKET-0001"], {"TICKET-0001": ""})
+    assert len(pivot_table.validation_error) != 0
+
+
+def test_validation_a0202() -> None:  # ticket_id_listの不足
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.validation(["TICKET-0001", "TICKET-0002"], {"TICKET-0001": "", "TICKET-0003": ""})
+    assert len(pivot_table.validation_error) != 0

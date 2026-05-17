@@ -223,7 +223,7 @@ class MainWindow:
         self.problem_textbox = tk.Text(self.frame3, yscrollcommand=self.problem_vbar.set)
         self.problem_textbox.pack(fill=tk.BOTH, expand=True)
 
-        self.task_vbar.config(command=self.problem_textbox.yview)
+        self.problem_vbar.config(command=self.problem_textbox.yview)
 
         self.panel1.add(self.frame3)
 
