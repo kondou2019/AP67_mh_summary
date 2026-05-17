@@ -93,7 +93,7 @@ class Validator:
                         self.validation_error.append(
                             ValidationError(
                                 level=ERROR,
-                                message=f'時間が重複しています。line_no={str(mht2.location.line_no) if mht2.location is not None else "-"}',
+                                message="時間が重複しています。",
                                 mht=mht1,
                             )
                         )
@@ -114,8 +114,8 @@ class Validator:
                         self.validation_error.append(
                             ValidationError(
                                 level=ERROR,
-                                message=f'親タスクの範囲外。reason="開始時刻", line_no={str(mht0.location.line_no) if mht0.location is not None else "-"}',
-                                mht=mht,
+                                message='親タスクの範囲外。reason="開始時刻"',
+                                mht=mht0,
                             )
                         )
                 # 終了時刻をチェック
@@ -127,8 +127,8 @@ class Validator:
                         self.validation_error.append(
                             ValidationError(
                                 level=ERROR,
-                                message=f'親タスクの範囲外。reason="終了時刻", line_no={str(mht0.location.line_no) if mht0.location is not None else "-"}',
-                                mht=mht,
+                                message='親タスクの範囲外。reason="終了時刻"',
+                                mht=mht0,
                             )
                         )
                 #
