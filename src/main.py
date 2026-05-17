@@ -140,6 +140,7 @@ class MainWindow:
             menu_file = tkinter.Menu(menu, tearoff=0)
             menu_file.add_command(label="開く(O)", command=self.on_menu_file_open_click)
             menu_file.add_command(label="再読込(R)", command=self.on_menu_file_reload_click)
+            menu_file.add_command(label="開いたファイルをメモ帳で開く...", command=self.on_menu_file_notepad_open_click)
             menu_file.add_separator()
             menu_file.add_command(label="終了(E)", command=self.on_menu_file_exit_click)
             menu.add_cascade(label="ファイル(F)", menu=menu_file)
@@ -274,6 +275,12 @@ class MainWindow:
             text = f.read()
         #
         self.update_task_textbox(text, file_name=self.file_path_s)
+
+    def on_menu_file_notepad_open_click(self) -> None:
+        if self.file_path_s is None:
+            return
+        #
+        subprocess.Popen(["notepad", self.file_path_s])
 
     def on_menu_help_about_click(self) -> None:
         messagebox.showinfo("バージョン情報", f"mh_summary {__VERSION__}")
