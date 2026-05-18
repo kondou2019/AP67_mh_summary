@@ -107,8 +107,12 @@ class DialogReorderPivotTable:
     def on_button_clear_all(self) -> None:
         self.ticket_url_textbox.delete("1.0", tk.END)
         self.pivot_table_textbox.delete("1.0", tk.END)
+        self.problem_textbox.delete("1.0", tk.END)
 
     def on_button_reorder(self) -> None:
+        # 実行結果をクリア
+        self.problem_textbox.delete("1.0", tk.END)
+        # uiが取得
         ticket_url_text = self.ticket_url_textbox.get("1.0", tk.END)
         pivot_table_text = self.pivot_table_textbox.get("1.0", tk.END)
         # 並び替え
