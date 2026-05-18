@@ -50,6 +50,9 @@ class ReorderPivotTable:
         # ticket_url_textからチケットIDの一覧を作成
         ticket_id_list: list[str] = []
         for line in ticket_url_text.splitlines():
+            line = line.strip()
+            if line == "":  # 空行?
+                continue
             parse_result = urllib.parse.urlparse(line)
             p = Path(parse_result.path)
             ticket_id_list.append(p.name)
