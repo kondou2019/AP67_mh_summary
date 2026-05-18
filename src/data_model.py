@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime, time
-from enum import IntEnum, auto
+from enum import IntEnum, StrEnum, auto
 from logging import ERROR, getLevelName
 from typing import Any, Iterator, Optional, Self
 
@@ -11,12 +11,25 @@ class Location:
     file_name: str
 
 
-# Enumにすると、update_task_textbox()でtask_summary()をすると、record_typeが変化してしまう。
-class MhTaskType(IntEnum):
+class MhTaskType(StrEnum):
     UNKNOWN = (auto(),)
     BEGAN_ENDED = (auto(),)  # 時刻(範囲)
     TIMESTAMP = (auto(),)  # 作業記録(開始時刻のみ)
     TEXT = (auto(),)  # 時刻なし
+
+
+# class MhTaskType(IntEnum):
+#    UNKNOWN = auto(),
+#    BEGAN_ENDED = auto(),  # 時刻(範囲)
+#    TIMESTAMP = auto(),  # 作業記録(開始時刻のみ)
+#    TEXT = auto(),  # 時刻なし
+
+# Enumにすると、update_task_textbox()でtask_summary()をすると、record_typeが変化してしまう。
+# class MhTaskType:
+# UNKNOWN = (auto(),)
+# BEGAN_ENDED = (auto(),)  # 時刻(範囲)
+# TIMESTAMP = (auto(),)  # 作業記録(開始時刻のみ)
+# TEXT = (auto(),)  # 時刻なし
 
 
 @dataclass
