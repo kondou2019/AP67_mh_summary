@@ -111,6 +111,7 @@ class TagEntry:
     match_re: str = ""
     description: str = ""
     sample: Optional[str] = None
+    identifier_require_dict: Optional[dict[str, str]] = None
     identifier_dict: Optional[dict[str, str]] = None
     tag_entry_dict: dict[str, str] = field(default_factory=dict)
 

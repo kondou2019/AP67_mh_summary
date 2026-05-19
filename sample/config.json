@@ -34,9 +34,11 @@
                     "match_re": "^PRレビュー;",
                     "description": "",
                     "sample": "PRレビュー;PR# 1;[チケット1]内容",
+                    "identifier_require_dict": {
+                        "pr_id": ";PR#\\s*(\\d+);"
+                    },
                     "identifier_dict" : {
                         "ticket_id": ";\\[(チケット.*?)\\]",
-                        "pr_id": ";PR#\\s*(\\d+);"
                     },
                     "tag_entry_dict": {
                         "レビュー": "",
@@ -54,7 +56,7 @@
                     "match_re": "^PRレビュー;",
                     "description": "",
                     "sample": "PRレビュー;PR# 1;内容",
-                    "identifier_dict" : {
+                    "identifier_require_dict": {
                         "pr_id": ";PR#\\s*(\\d+);"
                     },
                     "tag_entry_dict": {

@@ -1,6 +1,6 @@
 import pytest
 
-from src.data_model import Config, MhTask, TagEntry, TagGroup
+from src.data_model import Config, MhTask, TagEntry, TagGroup, check_validation_error
 from src.task_categorize import MhTaskCategorize
 
 
@@ -159,3 +159,46 @@ def test_task_add_tag_x99(_test_id: str, line_text: str, tag_expected: dict[str,
     categorize.task_add_tag([mht])
     for k in tag_expected.keys():  # tag_expectedの分だけチェックする。多い分は気にしない。
         assert mht.tag_dict[k] == tag_expected[k]
+
+@pytest.mark.parametrize(
+    "_test_id, line_text",
+    [
+        ("a0101", "チケット作成;識別子なし"),
+        (
+            "a0102",
+            "PRレビュー;識別子なし",
+        ),
+    ],
+)
+def test_task_add_tag_x98(_test_id: str, line_text: str) -> None: # 必須識別子なし
+    mht = MhTask()
+    mht.line_text = line_text
+    #
+    config = Config()
+    config.tag_config = [
+        TagGroup(
+            group_name="ticket",
+            tag_entry_list=[
+                TagEntry(
+                    task_type="チケット作成",
+                    match_re="^チケット作成;",
+                    identifier_require_dict={"ticket_id": "^.*;\\[(チケット.*?)\\]"},
+                    tag_entry_dict={"チケット": "$ticket_id"},
+                ),
+            ],
+        ),
+        TagGroup(
+            group_name="pull_request",
+            tag_entry_list=[
+                TagEntry(
+                    task_type="PRレビュー",
+                    match_re="^PRレビュー;",
+                    identifier_require_dict={"pr_id": ";PR#\\s*(\\d+);"},
+                    tag_entry_dict={"レビュー": "", "pull_request": "$pr_id"},
+                ),
+            ],
+        ),
+    ]
+    categorize = MhTaskCategorize(config=config)
+    categorize.task_add_tag([mht])
+    assert True == check_validation_error(categorize.validation_error) # ERROR バリデーション

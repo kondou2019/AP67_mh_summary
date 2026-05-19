@@ -38,6 +38,26 @@ class MhTaskCategorize:
         # 識別子
         identifier_dict: dict[str, str] = {}
         self.debug_identifier_dict = {}
+        ## 必須識別子
+        if te.identifier_require_dict is not None:
+            for k, v in te.identifier_require_dict.items():
+                match = re.search(v, line)
+                if match:
+                    if len(match.group()) == 1:
+                        v_id = match.group()
+                    else:
+                        v_id = match.group(1)
+                    identifier_dict[k] = v_id
+                else:
+                    self.validation_error.append(
+                        ValidationError(
+                            level=ERROR,
+                            message=f"{k}の記述が不足しています。",
+                            mht=mht,
+                        )
+                    )
+                    return False
+        ## オプショナル識別子
         if te.identifier_dict is not None:
             for k, v in te.identifier_dict.items():
                 match = re.search(v, line)
@@ -48,14 +68,13 @@ class MhTaskCategorize:
                         v_id = match.group(1)
                     identifier_dict[k] = v_id
                 else:
-                    if k == "ticket_id":
-                        self.validation_error.append(
-                            ValidationError(
-                                level=WARNING,
-                                message="チケット番号が省略されています。記入漏れを確認してください。",
-                                mht=mht,
-                            )
+                    self.validation_error.append(
+                        ValidationError(
+                            level=WARNING,
+                            message=f"{k}が省略されています。記入漏れを確認してください。",
+                            mht=mht,
                         )
+                    )
                     return False
             self.debug_identifier_dict = identifier_dict
         #

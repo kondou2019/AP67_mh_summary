@@ -56,40 +56,67 @@ class DialogTagConfigVerify:
         self.match_re_textbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
         tk.Button(self.frame3, text="esc", command=self.on_button_match_re_escape).pack(side=tk.LEFT)
         tk.Button(self.frame3, text="une", command=self.on_button_match_re_unescape).pack(side=tk.LEFT)
-        ## 識別子
+        ## 識別子;identifier_require_dict
         self.frame4 = tk.Frame(self.root)
         ###
         self.frame41 = tk.Frame(self.frame4)
         self.frame41.pack(fill=tk.X)
-        tk.Label(self.frame41, text="identifier_dict:").pack(side=tk.LEFT)
+        tk.Label(self.frame41, text="identifier_require_dict:").pack(side=tk.LEFT)
         ###
         self.frame42 = tk.Frame(self.frame4)
         self.frame42.pack(fill=tk.X)
 
         tk.Label(self.frame42, text="k:").grid(column=0, row=0)
-        self.identifier_dict_k1_textbox = tk.Entry(self.frame42)
-        self.identifier_dict_k1_textbox.grid(column=1, row=0)
+        self.identifier_require_dict_k1_textbox = tk.Entry(self.frame42)
+        self.identifier_require_dict_k1_textbox.grid(column=1, row=0)
         tk.Label(self.frame42, text="v_re:").grid(column=2, row=0)
-        self.identifier_dict_v1_textbox = tk.Entry(self.frame42)
-        self.identifier_dict_v1_textbox.grid(column=3, row=0)
-        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_dict_v1_escape).grid(column=4, row=0)
-        tk.Button(self.frame42, text="une", command=self.on_button_identifier_dict_v1_unescape).grid(column=5, row=0)
+        self.identifier_require_dict_v1_textbox = tk.Entry(self.frame42)
+        self.identifier_require_dict_v1_textbox.grid(column=3, row=0)
+        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_require_dict_v1_escape).grid(column=4, row=0)
+        tk.Button(self.frame42, text="une", command=self.on_button_identifier_require_dict_v1_unescape).grid(column=5, row=0)
 
         tk.Label(self.frame42, text="k:").grid(column=0, row=1)
-        self.identifier_dict_k2_textbox = tk.Entry(self.frame42)
-        self.identifier_dict_k2_textbox.grid(column=1, row=1, sticky=tk.NSEW)
+        self.identifier_require_dict_k2_textbox = tk.Entry(self.frame42)
+        self.identifier_require_dict_k2_textbox.grid(column=1, row=1, sticky=tk.NSEW)
         tk.Label(self.frame42, text="v_re:").grid(column=2, row=1)
-        self.identifier_dict_v2_textbox = tk.Entry(self.frame42)
-        self.identifier_dict_v2_textbox.grid(column=3, row=1)
-        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_dict_v2_escape).grid(column=4, row=1)
-        tk.Button(self.frame42, text="une", command=self.on_button_identifier_dict_v2_unescape).grid(column=5, row=1)
-        ## 実行結果
+        self.identifier_require_dict_v2_textbox = tk.Entry(self.frame42)
+        self.identifier_require_dict_v2_textbox.grid(column=3, row=1)
+        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_require_dict_v2_escape).grid(column=4, row=1)
+        tk.Button(self.frame42, text="une", command=self.on_button_identifier_require_dict_v2_unescape).grid(column=5, row=1)
+        ## 識別子;identifier_dict
         self.frame5 = tk.Frame(self.root)
-        tk.Label(self.frame5, text="実行結果:").pack(anchor=tk.W)
         ###
-        self.result_vbar = tk.Scrollbar(self.frame5, orient=tk.VERTICAL)
+        self.frame51 = tk.Frame(self.frame5)
+        self.frame51.pack(fill=tk.X)
+        tk.Label(self.frame51, text="identifier_dict:").pack(side=tk.LEFT)
+        ###
+        self.frame52 = tk.Frame(self.frame5)
+        self.frame52.pack(fill=tk.X)
+
+        tk.Label(self.frame52, text="k:").grid(column=0, row=0)
+        self.identifier_dict_k1_textbox = tk.Entry(self.frame52)
+        self.identifier_dict_k1_textbox.grid(column=1, row=0)
+        tk.Label(self.frame52, text="v_re:").grid(column=2, row=0)
+        self.identifier_dict_v1_textbox = tk.Entry(self.frame52)
+        self.identifier_dict_v1_textbox.grid(column=3, row=0)
+        tk.Button(self.frame52, text="esc", command=self.on_button_identifier_dict_v1_escape).grid(column=4, row=0)
+        tk.Button(self.frame52, text="une", command=self.on_button_identifier_dict_v1_unescape).grid(column=5, row=0)
+
+        tk.Label(self.frame52, text="k:").grid(column=0, row=1)
+        self.identifier_dict_k2_textbox = tk.Entry(self.frame52)
+        self.identifier_dict_k2_textbox.grid(column=1, row=1, sticky=tk.NSEW)
+        tk.Label(self.frame52, text="v_re:").grid(column=2, row=1)
+        self.identifier_dict_v2_textbox = tk.Entry(self.frame52)
+        self.identifier_dict_v2_textbox.grid(column=3, row=1)
+        tk.Button(self.frame52, text="esc", command=self.on_button_identifier_dict_v2_escape).grid(column=4, row=1)
+        tk.Button(self.frame52, text="une", command=self.on_button_identifier_dict_v2_unescape).grid(column=5, row=1)
+        ## 実行結果
+        self.frame6 = tk.Frame(self.root)
+        tk.Label(self.frame6, text="実行結果:").pack(anchor=tk.W)
+        ###
+        self.result_vbar = tk.Scrollbar(self.frame6, orient=tk.VERTICAL)
         self.result_vbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.result_textbox = tk.Text(self.frame5, yscrollcommand=self.result_vbar.set)
+        self.result_textbox = tk.Text(self.frame6, yscrollcommand=self.result_vbar.set)
         self.result_textbox.pack(fill=tk.BOTH, expand=True)
         #
         self.frame1.pack(side=tk.TOP, fill=tk.X)
@@ -97,6 +124,7 @@ class DialogTagConfigVerify:
         self.frame3.pack(fill=tk.X)
         self.frame4.pack(fill=tk.X)
         self.frame5.pack(fill=tk.X)
+        self.frame6.pack(fill=tk.X)
 
     # ====================#
     # GUIイベント(button) #
@@ -104,6 +132,10 @@ class DialogTagConfigVerify:
     def on_button_clear_all(self) -> None:
         self.sample_textbox.delete(0, tkinter.END)
         self.match_re_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_k1_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_v1_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_k2_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_v2_textbox.delete(0, tkinter.END)
         self.identifier_dict_k1_textbox.delete(0, tkinter.END)
         self.identifier_dict_v1_textbox.delete(0, tkinter.END)
         self.identifier_dict_k2_textbox.delete(0, tkinter.END)
@@ -114,6 +146,10 @@ class DialogTagConfigVerify:
     def on_button_execute(self) -> None:
         sample_text = self.sample_textbox.get()
         match_re_text = self.match_re_textbox.get()
+        identifier_require_dict_k1_text = self.identifier_require_dict_k1_textbox.get()
+        identifier_require_dict_v1_text = self.identifier_require_dict_v1_textbox.get()
+        identifier_require_dict_k2_text = self.identifier_require_dict_k2_textbox.get()
+        identifier_require_dict_v2_text = self.identifier_require_dict_v2_textbox.get()
         identifier_dict_k1_text = self.identifier_dict_k1_textbox.get()
         identifier_dict_v1_text = self.identifier_dict_v1_textbox.get()
         identifier_dict_k2_text = self.identifier_dict_k2_textbox.get()
@@ -130,6 +166,10 @@ class DialogTagConfigVerify:
         te.task_type = "sample"
         te.match_re = match_re_text
         te.identifier_dict = {}
+        if identifier_require_dict_k1_text != "" and identifier_require_dict_v1_text != "":
+            te.identifier_dict[identifier_require_dict_k1_text] = identifier_require_dict_v1_text
+        if identifier_require_dict_k2_text != "" and identifier_require_dict_v2_text != "":
+            te.identifier_dict[identifier_require_dict_k2_text] = identifier_require_dict_v2_text
         if identifier_dict_k1_text != "" and identifier_dict_v1_text != "":
             te.identifier_dict[identifier_dict_k1_text] = identifier_dict_v1_text
         if identifier_dict_k2_text != "" and identifier_dict_v2_text != "":
@@ -163,6 +203,38 @@ class DialogTagConfigVerify:
         # self.root.clipboard_clear()
         # self.root.clipboard_append(s)
         pass
+
+    def on_button_identifier_require_dict_v1_escape(self) -> None:
+        # 変換
+        s = self.identifier_require_dict_v1_textbox.get()
+        s = json_escape_of_string(s)
+        # 更新
+        self.identifier_require_dict_v1_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_v1_textbox.insert(tkinter.END, s)
+
+    def on_button_identifier_require_dict_v1_unescape(self) -> None:
+        # 変換
+        s = self.identifier_require_dict_v1_textbox.get()
+        s = json_unescape_of_string(s)
+        # 更新
+        self.identifier_require_dict_v1_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_v1_textbox.insert(tkinter.END, s)
+
+    def on_button_identifier_require_dict_v2_escape(self) -> None:
+        # 変換
+        s = self.identifier_require_dict_v2_textbox.get()
+        s = json_escape_of_string(s)
+        # 更新
+        self.identifier_require_dict_v2_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_v2_textbox.insert(tkinter.END, s)
+
+    def on_button_identifier_require_dict_v2_unescape(self) -> None:
+        # 変換
+        s = self.identifier_require_dict_v2_textbox.get()
+        s = json_unescape_of_string(s)
+        # 更新
+        self.identifier_require_dict_v2_textbox.delete(0, tkinter.END)
+        self.identifier_require_dict_v2_textbox.insert(tkinter.END, s)
 
     def on_button_identifier_dict_v1_escape(self) -> None:
         # 変換
