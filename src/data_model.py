@@ -145,6 +145,29 @@ class ValidationError(ValidationErrorBase):
             return f"-:{getLevelName(self.level)}:{self.message}"
 
 
+@dataclass
+class ValidationError2(ValidationErrorBase):
+    """2つのMhTaskでエラー"""
+
+    mht1: MhTask
+    mht2: MhTask
+    message: str = ""
+
+    def __str__(self):
+        msg1 = ""
+        if self.mht1.location is not None:
+            msg1 = f"{self.mht1.location.line_no}:{getLevelName(self.level)}:{self.message},file_name={self.mht1.location.file_name}"
+        else:
+            msg1 = f"-:{getLevelName(self.level)}:{self.message}"
+        msg2 = ""
+        if self.mht2.location is not None:
+            msg2 = f"{self.mht2.location.line_no}"
+        else:
+            msg2 = f"-"
+
+        return f"{msg1},mht2={msg2}"
+
+
 def check_validation_error(validation_error: list[ValidationErrorBase]) -> bool:
     return any(x.level == ERROR for x in validation_error)
 

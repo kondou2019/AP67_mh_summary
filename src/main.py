@@ -19,6 +19,7 @@ from src.data_model import (
     Config,
     MhTask,
     ValidationError,
+    ValidationError2,
     ValidationErrorBase,
     check_validation_error,
     mhtask_dict_factory,
@@ -76,6 +77,11 @@ class MainWindow:
                 else:
                     # 1行出力
                     msg_list.append(str(err))
+            elif isinstance(err, ValidationError2):
+                # 3行出力
+                msg_list.append(f"({err.mht1.location.line_no}):{err.mht1.get_line()}")
+                msg_list.append(f"({err.mht2.location.line_no}):{err.mht2.get_line()}")
+                msg_list.append(f"\t{getLevelName(err.level)}:{err.message}")
             else:
                 msg_list.append(str(err))
         s = "\n".join(msg_list)

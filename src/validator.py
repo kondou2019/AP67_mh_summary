@@ -6,6 +6,7 @@ from src.data_model import (
     MhTaskListIterable,
     MhTaskType,
     ValidationError,
+    ValidationError2,
     ValidationErrorBase,
     check_validation_error,
 )
@@ -56,18 +57,20 @@ class Validator:
                 # 検査
                 if mht1.began_time == mht2.began_time:
                     self.validation_error.append(
-                        ValidationError(
+                        ValidationError2(
                             level=ERROR,
                             message=f'開始時刻が同じです。line_no={str(mht2.location.line_no) if mht2.location is not None else "-"}',
-                            mht=mht1,
+                            mht1=mht1,
+                            mht2=mht2,
                         )
                     )
                 if mht1.ended_time == mht2.ended_time:
                     self.validation_error.append(
-                        ValidationError(
+                        ValidationError2(
                             level=ERROR,
                             message=f'終了時刻が同じです。line_no={str(mht2.location.line_no) if mht2.location is not None else "-"}',
-                            mht=mht1,
+                            mht1=mht1,
+                            mht2=mht2,
                         )
                     )
                 pass
@@ -91,10 +94,11 @@ class Validator:
                 if mht1.began_time < mht2.began_time < mht1.ended_time:
                     if mht2.ended_time > mht1.ended_time:
                         self.validation_error.append(
-                            ValidationError(
+                            ValidationError2(
                                 level=ERROR,
-                                message="時間が重複しています。",
-                                mht=mht1,
+                                message=f"時間が重複しています。",
+                                mht1=mht1,
+                                mht2=mht2,
                             )
                         )
                 pass
@@ -112,10 +116,11 @@ class Validator:
                         pass
                     else:
                         self.validation_error.append(
-                            ValidationError(
+                            ValidationError2(
                                 level=ERROR,
                                 message='親タスクの範囲外。reason="開始時刻"',
-                                mht=mht0,
+                                mht1=mht0,
+                                mht2=mht,
                             )
                         )
                 # 終了時刻をチェック
@@ -125,10 +130,11 @@ class Validator:
                         pass
                     else:
                         self.validation_error.append(
-                            ValidationError(
+                            ValidationError2(
                                 level=ERROR,
                                 message='親タスクの範囲外。reason="終了時刻"',
-                                mht=mht0,
+                                mht1=mht0,
+                                mht2=mht,
                             )
                         )
                 #
