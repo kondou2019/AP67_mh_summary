@@ -318,6 +318,9 @@ def test_filter_task_began_ended_n0102() -> None:  # 階層
         ("n0204", "-", None, None, False, "-"),
         ("n0205", '"C:kondou.txt"', None, None, False, '"C:kondou.txt"'),  # 3文字目が':'
         ("n0206", "#09:00 abc", None, None, False, "#09:00 abc"),  # コメントアウト
+        ("a0301", "09:00　abc", None, None, False, ""),  # 時刻の後が、全角スペース
+        ("a0302", "-09:00　abc", None, None, False, ""),
+        ("a0303", "09:00-09:10　abc", None, None, False, ""),
     ],
 )
 def test_parse_time_to_time_x9901(

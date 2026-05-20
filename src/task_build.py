@@ -225,7 +225,7 @@ class MhTaskBuild:
                         mht=mht,
                     )
                 )
-                return (began_time, ended_time, began_only, remnant)
+                return (None, None, False, "")
         else:
             # 開始時刻
             result = re.match(r"^([01][0-9]|2[0-3]):[0-5][0-9]", line)
@@ -241,7 +241,7 @@ class MhTaskBuild:
                         mht=mht,
                     )
                 )
-                return (began_time, ended_time, began_only, remnant)
+                return (None, None, False, "")
             # '-'の判定
             if line.startswith("-"):
                 line0 = line[1:]
@@ -262,19 +262,19 @@ class MhTaskBuild:
                                 mht=mht,
                             )
                         )
-                        return (began_time, ended_time, began_only, remnant)
+                        return (None, None, False, "")
             elif line.startswith(" "):  # "00:00"。開始時刻のみ
                 began_only = True
-            else:
-                if len(line.strip()) != 0:
-                    self.validation_error.append(
-                        ValidationError(
-                            level=ERROR,
-                            message='時刻が不正です。reasen="範囲記号(-)がない"',
-                            mht=mht,
-                        )
-                    )
-                    return (began_time, ended_time, began_only, remnant)
+        # 時刻とタイトルの区切り文字(スペース)のチェック
+        if len(line) >= 1 and line[0] != " ":  # 時刻との隙間
+            self.validation_error.append(
+                ValidationError(
+                    level=ERROR,
+                    message='時刻タスクの書き方が不正です。reasen="時刻と作業タイトルの間にスペースが無い"',
+                    mht=mht,
+                )
+            )
+            return (None, None, False, "")
         # 作業タイトル
         line = line.strip()
         if len(line) == 0:
@@ -285,7 +285,7 @@ class MhTaskBuild:
                     mht=mht,
                 )
             )
-            return (began_time, ended_time, began_only, remnant)
+            return (None, None, False, "")
         remnant = line
         return (began_time, ended_time, began_only, remnant)
 
