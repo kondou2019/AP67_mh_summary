@@ -87,7 +87,7 @@ class MainWindow:
         s = "\n".join(msg_list)
         # エラー更新
         self.problem_textbox.delete("1.0", tk.END)
-        self.problem_textbox.insert("1.0", s)
+        self.problem_textbox.insert(tk.END, s)
 
     def update_task_textbox(self, text: str, *, file_name: str = "") -> None:
         # logseq 対応
@@ -133,7 +133,7 @@ class MainWindow:
         s = f.getvalue()
         f.close()
         # 結果出力
-        self.task_textbox.insert("1.0", s)
+        self.task_textbox.insert(tk.END, s)
 
     # ===================#
     # GUIイベント,Window #

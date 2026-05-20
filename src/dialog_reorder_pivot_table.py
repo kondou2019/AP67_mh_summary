@@ -29,7 +29,7 @@ class DialogReorderPivotTable:
         self.root = tk.Toplevel(parent)
         self.MainWindow_load()
 
-    def update_problem_textbox(self, validation_error: list[ValidationErrorBase]) -> None:
+    def update_result_textbox(self, validation_error: list[ValidationErrorBase]) -> None:
         """!
         @brief 更新;結果出力
         """
@@ -44,8 +44,9 @@ class DialogReorderPivotTable:
                 msg_list.append(str(err))
         s = "\n".join(msg_list)
         # エラー更新
-        self.problem_textbox.delete("1.0", tk.END)
-        self.problem_textbox.insert("1.0", s)
+        self.result_textbox.delete("1.0", tk.END)
+        self.result_textbox.insert(tk.END, s)
+        self.result_textbox.insert(tk.END, "\n")
 
     # ===================#
     # GUIイベント,Window #
@@ -89,15 +90,15 @@ class DialogReorderPivotTable:
         self.frame4 = tk.Frame(self.root)
         self.frame4.pack(fill=tk.X)
 
-        tk.Label(self.frame4, text="問題:", anchor=tkinter.W).pack(anchor=tk.W)
+        tk.Label(self.frame4, text="実行結果:", anchor=tkinter.W).pack(anchor=tk.W)
 
-        self.problem_vbar = tk.Scrollbar(self.frame4, orient=tk.VERTICAL)
-        self.problem_vbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.result_vbar = tk.Scrollbar(self.frame4, orient=tk.VERTICAL)
+        self.result_vbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.problem_textbox = tk.Text(self.frame4, yscrollcommand=self.problem_vbar.set)
-        self.problem_textbox.pack(fill=tk.BOTH, expand=True)
+        self.result_textbox = tk.Text(self.frame4, yscrollcommand=self.result_vbar.set)
+        self.result_textbox.pack(fill=tk.BOTH, expand=True)
 
-        self.problem_vbar.config(command=self.problem_textbox.yview)
+        self.result_vbar.config(command=self.result_textbox.yview)
 
         self.panel1.add(self.frame4)
 
@@ -107,11 +108,11 @@ class DialogReorderPivotTable:
     def on_button_clear_all(self) -> None:
         self.ticket_url_textbox.delete("1.0", tk.END)
         self.pivot_table_textbox.delete("1.0", tk.END)
-        self.problem_textbox.delete("1.0", tk.END)
+        self.result_textbox.delete("1.0", tk.END)
 
     def on_button_reorder(self) -> None:
         # 実行結果をクリア
-        self.problem_textbox.delete("1.0", tk.END)
+        self.result_textbox.delete("1.0", tk.END)
         # uiが取得
         ticket_url_text = self.ticket_url_textbox.get("1.0", tk.END)
         pivot_table_text = self.pivot_table_textbox.get("1.0", tk.END)
@@ -119,11 +120,13 @@ class DialogReorderPivotTable:
         pivot_table = ReorderPivotTable()
         s = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
         if check_validation_error(pivot_table.validation_error):
-            self.update_problem_textbox(pivot_table.validation_error)
+            self.update_result_textbox(pivot_table.validation_error)
             return
         ## バリデーションエラー(I,W)出力
-        self.update_problem_textbox(pivot_table.validation_error)
+        self.update_result_textbox(pivot_table.validation_error)
         # 結果をクリップボードにコピー
         # クリップボードに出力
         self.root.clipboard_clear()
         self.root.clipboard_append(s)
+        #
+        self.result_textbox.insert(tk.END, "結果をクリップボードにコピーしました。\n")

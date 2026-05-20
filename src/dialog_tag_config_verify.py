@@ -72,8 +72,12 @@ class DialogTagConfigVerify:
         tk.Label(self.frame42, text="v_re:").grid(column=2, row=0)
         self.identifier_require_dict_v1_textbox = tk.Entry(self.frame42)
         self.identifier_require_dict_v1_textbox.grid(column=3, row=0)
-        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_require_dict_v1_escape).grid(column=4, row=0)
-        tk.Button(self.frame42, text="une", command=self.on_button_identifier_require_dict_v1_unescape).grid(column=5, row=0)
+        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_require_dict_v1_escape).grid(
+            column=4, row=0
+        )
+        tk.Button(self.frame42, text="une", command=self.on_button_identifier_require_dict_v1_unescape).grid(
+            column=5, row=0
+        )
 
         tk.Label(self.frame42, text="k:").grid(column=0, row=1)
         self.identifier_require_dict_k2_textbox = tk.Entry(self.frame42)
@@ -81,8 +85,12 @@ class DialogTagConfigVerify:
         tk.Label(self.frame42, text="v_re:").grid(column=2, row=1)
         self.identifier_require_dict_v2_textbox = tk.Entry(self.frame42)
         self.identifier_require_dict_v2_textbox.grid(column=3, row=1)
-        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_require_dict_v2_escape).grid(column=4, row=1)
-        tk.Button(self.frame42, text="une", command=self.on_button_identifier_require_dict_v2_unescape).grid(column=5, row=1)
+        tk.Button(self.frame42, text="esc", command=self.on_button_identifier_require_dict_v2_escape).grid(
+            column=4, row=1
+        )
+        tk.Button(self.frame42, text="une", command=self.on_button_identifier_require_dict_v2_unescape).grid(
+            column=5, row=1
+        )
         ## 識別子;identifier_dict
         self.frame5 = tk.Frame(self.root)
         ###
@@ -197,7 +205,7 @@ class DialogTagConfigVerify:
             # 内容の取得
             s = f.getvalue()
 
-        self.result_textbox.insert("1.0", s)
+        self.result_textbox.insert(tk.END, s)
         # 結果をクリップボードにコピー
         # クリップボードに出力
         # self.root.clipboard_clear()

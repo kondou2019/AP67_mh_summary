@@ -160,6 +160,7 @@ def test_task_add_tag_x99(_test_id: str, line_text: str, tag_expected: dict[str,
     for k in tag_expected.keys():  # tag_expectedの分だけチェックする。多い分は気にしない。
         assert mht.tag_dict[k] == tag_expected[k]
 
+
 @pytest.mark.parametrize(
     "_test_id, line_text",
     [
@@ -170,7 +171,7 @@ def test_task_add_tag_x99(_test_id: str, line_text: str, tag_expected: dict[str,
         ),
     ],
 )
-def test_task_add_tag_x98(_test_id: str, line_text: str) -> None: # 必須識別子なし
+def test_task_add_tag_x98(_test_id: str, line_text: str) -> None:  # 必須識別子なし
     mht = MhTask()
     mht.line_text = line_text
     #
@@ -201,4 +202,4 @@ def test_task_add_tag_x98(_test_id: str, line_text: str) -> None: # 必須識別
     ]
     categorize = MhTaskCategorize(config=config)
     categorize.task_add_tag([mht])
-    assert True == check_validation_error(categorize.validation_error) # ERROR バリデーション
+    assert True == check_validation_error(categorize.validation_error)  # ERROR バリデーション
