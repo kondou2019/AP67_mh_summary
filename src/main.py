@@ -55,7 +55,8 @@ class MainWindow:
 
     def set_title(self, *, file_name: Optional[str] = None) -> None:
         if file_name is not None:
-            self.root.title(f"{file_name} - mh_summary")
+            s = Path(file_name).name
+            self.root.title(f"{s} - mh_summary")
         else:
             self.root.title("無題 - mh_summary")
         self.file_path_s = file_name
