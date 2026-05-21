@@ -19,6 +19,26 @@ def make_testdata(text: str) -> list[MhTask]:
     return mht_list
 
 
+def test__build_mht_parent_dict_n0101() -> None:
+    text = """\
+09:00-09:30 作業1
+	09:00-09:10 作業1-1
+09:10-09:40 作業2
+"""
+    build = MhTaskBuild()
+    f = io.StringIO(text)
+    mht_list = build.task_read(f)
+    mht_list = build._build_task_tree(mht_list)
+    # 実行
+    validatior = Validator(mht_list=mht_list)
+    result = validatior._build_mht_parent_dict()
+    # 検証
+    assert len(result) == 3
+    assert result[id(mht_list[0])] == None
+    assert result[id(mht_list[0].child_task[0])].line_text == "作業1"
+    assert result[id(mht_list[1])] == None
+
+
 def test_validation_began_ended_1_n0101() -> None:  # 正常
     text = """\
 09:00-09:10 作業1
@@ -266,5 +286,37 @@ def test_validation_within_of_parent_time_range_x98(
     # 実行
     validatior = Validator(mht_list=mht_list)
     validatior._validation_within_of_parent_time_range()
+    # 検証
+    assert len(validatior.validation_error) != 0
+
+
+@pytest.mark.parametrize(
+    "_test_id, text",
+    [
+        (
+            "a0101",  # テキストに作業時間
+            """\
+テキスト1
+	10:00-10:10 作業1-1
+    """,
+        ),
+        (
+            "a0102",  # 途中のテキストに作業時間
+            """\
+10:00-10:10 作業1
+    テキスト1
+		10:00-10:10 作業1-1
+    """,
+        ),
+    ],
+)
+def test_validation_work_time_in_the_text_x99(
+    _test_id: str,
+    text: str,
+) -> None:  # エラー
+    mht_list = make_testdata(text)
+    # 実行
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_work_time_in_the_text()
     # 検証
     assert len(validatior.validation_error) != 0

@@ -16,10 +16,37 @@ from src.task_utl import calc_minute_of_day, check_began_ended_leaf
 class Validator:
     def __init__(self, *, mht_list: list[MhTask]):
         self.mht_list = mht_list
+        #
         self.validation_error: list[ValidationErrorBase] = []
-
-        # 親のMhTaskの辞書を作成
+        self.mht_parent_dict: dict[int, Optional[MhTask]] = self._build_mht_parent_dict()  # 親のMhTaskの辞書
         pass
+
+    def _build_mht_parent_dict(self) -> dict[int, Optional[MhTask]]:
+        """!
+        @brief 親MhTaskを取得
+        @return dict[id(MhTask), 親のMhTask]
+        """
+
+        def _build_mht_parent_dict_local(parent_mht: MhTask) -> None:
+            for mht in parent_mht.child_task:
+                result[id(mht)] = parent_mht
+                _build_mht_parent_dict_local(mht)
+
+        #
+        result: dict[MhTask, Optional[MhTask]] = {}
+        for mht in self.mht_list:
+            result[id(mht)] = None  # ルートの親はなし
+            _build_mht_parent_dict_local(mht)
+        return result
+
+    def _get_mht_parent(self, mht: MhTask) -> Optional[MhTask]:
+        """!
+        @brief 親MhTaskを取得
+        @param[in] path DBのファイル名
+        @retval 親MhTask
+        @retval None 親なし
+        """
+        return self.mht_parent_dict[id(mht)]
 
     def _validation_began_ended_1(self) -> None:
         """バリデーション。開始時刻,終了時刻(1行内)"""
@@ -107,6 +134,29 @@ class Validator:
                 pass
             pass
 
+    def _validation_work_time_in_the_text(self) -> None:
+        """バリデーション。テキストに、作業時間がある"""
+        for mht in MhTaskListIterable(self.mht_list):
+            if len(mht.child_task) != 0:
+                continue
+            if mht.record_type != MhTaskType.BEGAN_ENDED:
+                continue
+            # 最上位まで、BEGAN_ENDEDか確認
+            mht_parent = self._get_mht_parent(mht)
+            while mht_parent is not None:
+                if mht_parent.record_type != MhTaskType.BEGAN_ENDED:
+                    self.validation_error.append(
+                        ValidationError2(
+                            level=ERROR,
+                            message=f"テキストに、作業時間を記録しています。",
+                            mht1=mht_parent,
+                            mht2=mht,
+                        )
+                    )
+                mht = mht_parent
+                mht_parent = self._get_mht_parent(mht)
+        pass
+
     def _validation_within_of_parent_time_range(self) -> None:
         """バリデーション。親タスクの時刻範囲に範囲に入っているか?"""
 
@@ -159,21 +209,18 @@ class Validator:
         # 1行単位
         ## バリデーション。開始時刻,終了時刻が同じ
         self._validation_task_same_began_time()
-        if check_validation_error(self.validation_error):
-            return self.validation_error
         ## バリデーション。開始時刻,終了時刻(1行内)
         self._validation_began_ended_1()
+        ## 中断
         if check_validation_error(self.validation_error):
             return self.validation_error
 
         # 親子
+        ## バリデーション。テキストに、作業時間がある
+        self._validation_work_time_in_the_text()
         ## バリデーション。親タスクの時刻範囲に範囲に入っているか?
         self._validation_within_of_parent_time_range()
-        if check_validation_error(self.validation_error):
-            return self.validation_error
         ## バリデーション。作業時間の重複。リーフのみ対象。ブランチは重複する
         self._validation_overlap()
-        if check_validation_error(self.validation_error):
-            return self.validation_error
 
         return self.validation_error
