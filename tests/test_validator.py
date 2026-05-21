@@ -28,8 +28,8 @@ def test_validation_began_ended_1_n0101() -> None:  # 正常
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_began_ended_1(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_began_ended_1()
     # 検証
     assert len(validatior.validation_error) == 0  # 正常
 
@@ -56,8 +56,8 @@ def test_validation_began_ended_1_x99(
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_began_ended_1(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_began_ended_1()
     # 検証
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
@@ -72,8 +72,8 @@ def test_validation_task_same_began_time_n0101() -> None:  # 正常
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_task_same_began_time(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_task_same_began_time()
     # 検証
     assert len(validatior.validation_error) == 0  # 正常
 
@@ -88,8 +88,8 @@ def test_validation_task_same_began_time_n0201() -> None:  # 開始時刻が同�
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_task_same_began_time(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_task_same_began_time()
     # 検証
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
@@ -104,8 +104,8 @@ def test_validation_task_same_began_time_n0202() -> None:  # 終了時刻が同�
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_task_same_began_time(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_task_same_began_time()
     # 検証
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
@@ -120,8 +120,8 @@ def test_validation_overlap_n0101() -> None:  # 開始時刻が重複
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_overlap(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_overlap()
     # 検証
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
@@ -136,8 +136,8 @@ def test_validation_overlap_n0102() -> None:  # 終了時刻が重複
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_overlap(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_overlap()
     # 検証
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
@@ -152,8 +152,8 @@ def test_validation_overlap_n0201() -> None:  # エラーなし。重複なし
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_overlap(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_overlap()
     # 検証
     assert len(validatior.validation_error) == 0
 
@@ -168,8 +168,8 @@ def test_validation_overlap_b0202() -> None:  # エラーなし。包含
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_overlap(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_overlap()
     # 検証
     assert len(validatior.validation_error) == 0
 
@@ -188,8 +188,8 @@ def test_validation_overlap_n0203() -> None:  # エラーなし。親タスク�
     mht_list = build.task_read(f)
     mht_list = build._build_task_tree(mht_list)
     # 実行
-    validatior = Validator()
-    validatior._validation_overlap(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_overlap()
     # 検証
     assert len(validatior.validation_error) == 0
 
@@ -219,8 +219,8 @@ def test_validation_within_of_parent_time_range_x99(
 ) -> None:  # 正常
     mht_list = make_testdata(text)
     # 実行
-    validatior = Validator()
-    validatior._validation_within_of_parent_time_range(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_within_of_parent_time_range()
     # 検証
     assert len(validatior.validation_error) == 0
 
@@ -236,21 +236,21 @@ def test_validation_within_of_parent_time_range_x99(
     """,
         ),
         (
-            "a0101",  # 開始時刻が範囲外
+            "a0102",  # 開始時刻が範囲外
             """\
 09:00-09:30 作業1
 	08:00-09:10 作業1-1
     """,
         ),
         (
-            "a0101",  # 終了時刻が範囲外
+            "a0103",  # 終了時刻が範囲外
             """\
 09:00-09:30 作業1
 	09:10-10:00 作業1-1
     """,
         ),
         (
-            "a0202",  # タイムスタンプで範囲外
+            "a0201",  # タイムスタンプで範囲外
             """\
 09:00-09:30 作業1
 	10:00 記録1
@@ -264,7 +264,7 @@ def test_validation_within_of_parent_time_range_x98(
 ) -> None:  # エラー
     mht_list = make_testdata(text)
     # 実行
-    validatior = Validator()
-    validatior._validation_within_of_parent_time_range(mht_list)
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_within_of_parent_time_range()
     # 検証
     assert len(validatior.validation_error) != 0

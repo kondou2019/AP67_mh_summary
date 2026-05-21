@@ -459,7 +459,7 @@ class MhTaskBuild:
         if check_validation_error(self.validation_error):
             return mht_list
         # バリデーション
-        self.validation_error.extend(Validator().validation(mht_list))
+        self.validation_error.extend(Validator(mht_list=mht_list).validation())
         if check_validation_error(self.validation_error):
             return mht_list
         # タスクの作業時間の分割

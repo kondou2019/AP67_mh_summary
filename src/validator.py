@@ -14,13 +14,16 @@ from src.task_utl import calc_minute_of_day, check_began_ended_leaf
 
 
 class Validator:
-    def __init__(self):
+    def __init__(self, *, mht_list: list[MhTask]):
+        self.mht_list = mht_list
         self.validation_error: list[ValidationErrorBase] = []
+
+        # 親のMhTaskの辞書を作成
         pass
 
-    def _validation_began_ended_1(self, task_list: list[MhTask]) -> None:
+    def _validation_began_ended_1(self) -> None:
         """バリデーション。開始時刻,終了時刻(1行内)"""
-        for mht in MhTaskListIterable(task_list):
+        for mht in MhTaskListIterable(self.mht_list):
             if mht.began_time is None or mht.ended_time is None:
                 continue
             if mht.began_time == mht.ended_time:
@@ -40,14 +43,14 @@ class Validator:
                     )
                 )
 
-    def _validation_task_same_began_time(self, task_list: list[MhTask]) -> None:
+    def _validation_task_same_began_time(self) -> None:
         """バリデーション。開始時刻,終了時刻が同じ"""
-        for mht1 in MhTaskListIterable(task_list):
+        for mht1 in MhTaskListIterable(self.mht_list):
             if mht1.began_time is None or mht1.ended_time is None:
                 continue
             if check_began_ended_leaf(mht1) == False:
                 continue
-            for mht2 in MhTaskListIterable(task_list):
+            for mht2 in MhTaskListIterable(self.mht_list):
                 if mht1 is mht2:  # 検査対象
                     continue
                 if mht2.began_time is None or mht2.ended_time is None:
@@ -76,14 +79,14 @@ class Validator:
                 pass
             pass
 
-    def _validation_overlap(self, task_list: list[MhTask]) -> None:
+    def _validation_overlap(self) -> None:
         """バリデーション。作業時間の重複。リーフのみ対象。ブランチは重複する。"""
-        for mht1 in MhTaskListIterable(task_list):
+        for mht1 in MhTaskListIterable(self.mht_list):
             if mht1.began_time is None or mht1.ended_time is None:
                 continue
             if check_began_ended_leaf(mht1) == False:
                 continue
-            for mht2 in MhTaskListIterable(task_list):
+            for mht2 in MhTaskListIterable(self.mht_list):
                 if mht1 is mht2:  # 検査対象
                     continue
                 if mht2.began_time is None or mht2.ended_time is None:
@@ -104,7 +107,7 @@ class Validator:
                 pass
             pass
 
-    def _validation_within_of_parent_time_range(self, mht_list: list[MhTask]) -> None:
+    def _validation_within_of_parent_time_range(self) -> None:
         """バリデーション。親タスクの時刻範囲に範囲に入っているか?"""
 
         def _validation_within_of_parent_time_range_local(mht: MhTask, began_m: int, ended_m: int) -> None:
@@ -144,32 +147,32 @@ class Validator:
                     _validation_within_of_parent_time_range_local(mht0, began0_m, ended0_m)
 
         #
-        for mht in mht_list:
+        for mht in self.mht_list:
             if mht.began_time is not None and mht.ended_time is not None:
                 began_m = calc_minute_of_day(mht.began_time)
                 ended_m = calc_minute_of_day(mht.ended_time)
                 _validation_within_of_parent_time_range_local(mht, began_m, ended_m)
         return
 
-    def validation(self, mht_list: list[MhTask]) -> list[ValidationErrorBase]:
+    def validation(self) -> list[ValidationErrorBase]:
         """バリデーション"""
         # 1行単位
         ## バリデーション。開始時刻,終了時刻が同じ
-        self._validation_task_same_began_time(mht_list)
+        self._validation_task_same_began_time()
         if check_validation_error(self.validation_error):
             return self.validation_error
         ## バリデーション。開始時刻,終了時刻(1行内)
-        self._validation_began_ended_1(mht_list)
+        self._validation_began_ended_1()
         if check_validation_error(self.validation_error):
             return self.validation_error
 
         # 親子
         ## バリデーション。親タスクの時刻範囲に範囲に入っているか?
-        self._validation_within_of_parent_time_range(mht_list)
+        self._validation_within_of_parent_time_range()
         if check_validation_error(self.validation_error):
             return self.validation_error
         ## バリデーション。作業時間の重複。リーフのみ対象。ブランチは重複する
-        self._validation_overlap(mht_list)
+        self._validation_overlap()
         if check_validation_error(self.validation_error):
             return self.validation_error
 
