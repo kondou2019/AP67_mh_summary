@@ -247,7 +247,7 @@ class MhTaskBuild:
                 line0 = line[1:]
                 # 終了時刻
                 if line0.startswith(" "):  # 終了時刻を省略。"00:00-"
-                    line = line0[1:]
+                    line = line0  # '-'を削除
                 else:
                     result = re.match(r"^([01][0-9]|2[0-3]):[0-5][0-9]", line0)
                     if result:

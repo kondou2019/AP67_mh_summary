@@ -311,7 +311,8 @@ def test_filter_task_began_ended_n0102() -> None:  # 階層
     [
         ("n0101", "09:00 abc", time(9, 0), None, True, "abc"),
         ("n0103", "09:00-10:00 abc", time(9, 0), time(10, 0), False, "abc"),
-        ("n0104", "-10:00 abc", None, time(10, 0), False, "abc"),
+        ("n0104", "10:00- abc", time(10, 0), None, False, "abc"),  # バリデーションエラーだが、この関数では正常
+        ("n0105", "-10:00 abc", None, time(10, 0), False, "abc"),
         ("n0201", "", None, None, False, ""),
         ("n0202", "abc", None, None, False, "abc"),
         ("n0203", ":-:", None, None, False, ":-:"),
