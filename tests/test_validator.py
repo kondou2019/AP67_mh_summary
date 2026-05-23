@@ -133,6 +133,78 @@ def test_validation_began_time_in_order_for_layer_x99(
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
 
+@pytest.mark.parametrize(
+    "_test_id, text",
+    [
+        # 開始時刻が一致しない
+        (
+            "n0102",
+            """\
+09:00-09:30 作業1
+	09:10-09:30 作業1-2
+""",
+        ),
+        # 終了時刻が一致しない
+        (
+            "n0102",
+            """\
+09:00-09:30 作業1
+	09:00-09:20 作業1-2
+""",
+        ),
+        # 開始時刻,終了時刻が一致しない
+        (
+            "n0102",
+            """\
+09:00-09:30 作業1
+	09:10-09:20 作業1-2
+""",
+        ),
+    ],
+)
+def test_validation_enough_child_task_x99(
+    _test_id: str,
+    text: str,
+) -> None:  # エラー
+    build = MhTaskBuild()
+    f = io.StringIO(text)
+    mht_list = build.task_read(f)
+    mht_list = build._build_task_tree(mht_list)
+    # 実行
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_enough_child_task()
+    # 検証
+    assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
+
+
+@pytest.mark.parametrize(
+    "_test_id, text",
+    [
+        # 子タスクなし
+        (
+            "n0102",
+            """\
+09:00-09:30 作業1
+	コメント
+""",
+        ),
+    ],
+)
+def test_validation_enough_child_task_x98(
+    _test_id: str,
+    text: str,
+) -> None:  # 正常
+    build = MhTaskBuild()
+    f = io.StringIO(text)
+    mht_list = build.task_read(f)
+    mht_list = build._build_task_tree(mht_list)
+    # 実行
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_enough_child_task()
+    # 検証
+    assert len(validatior.validation_error) == 0
+
+
 def test_validation_task_same_began_time_n0101() -> None:  # 正常
     text = """\
 09:00-09:10 作業1

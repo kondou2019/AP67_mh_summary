@@ -99,6 +99,55 @@ class Validator:
         #
         _validation_began_time_in_order_for_layer_local(self.mht_list)
 
+    def _validation_enough_child_task(self) -> None:
+        """バリデーション。子タスクが不足してます"""
+
+        def _validation_enough_child_task_local(parent_mht: MhTask) -> None:
+            if parent_mht.record_type != MhTaskType.BEGAN_ENDED:
+                return
+            # 開始時刻と終了時刻を取得
+            began_mht: Optional[MhTask] = None
+            ended_mht: Optional[MhTask] = None
+            for mht in parent_mht.child_task:
+                if mht.record_type != MhTaskType.BEGAN_ENDED:
+                    continue
+                if began_mht is None:
+                    began_mht = mht
+                    ended_mht = mht
+                    continue
+                if mht.began_time < began_mht.began_time:
+                    began_mht = mht
+                if began_mht.began_time < mht.began_time:
+                    ended_mht = mht
+            # 判定
+            if began_mht is not None:
+                if parent_mht.began_time != began_mht.began_time:
+                    self.validation_error.append(
+                        ValidationError2(
+                            level=ERROR,
+                            message=f'子タスクが不足してます。reasen="開始時刻が一致する子タスクがありません"',
+                            mht1=parent_mht,
+                            mht2=began_mht,
+                        )
+                    )
+            if ended_mht is not None:
+                if parent_mht.ended_time != ended_mht.ended_time:
+                    self.validation_error.append(
+                        ValidationError2(
+                            level=ERROR,
+                            message=f'子タスクが不足してます。reasen="終了時刻が一致する子タスクがありません"',
+                            mht1=parent_mht,
+                            mht2=ended_mht,
+                        )
+                    )
+            # 下位レイヤを確認
+            for mht in parent_mht.child_task:
+                _validation_enough_child_task_local(mht)
+
+        #
+        for mht in self.mht_list:
+            _validation_enough_child_task_local(mht)
+
     def _validation_task_same_began_time(self) -> None:
         """バリデーション。開始時刻,終了時刻が同じ"""
         for mht1 in MhTaskListIterable(self.mht_list):
@@ -247,7 +296,10 @@ class Validator:
         # レイヤ単位
         ## バリデーション。タスクの順番が不正
         self._validation_began_time_in_order_for_layer()
+
         # 親子
+        ## バリデーション。子タスクに不足はないか?
+        self._validation_enough_child_task()
         ## バリデーション。テキストに、作業時間がある
         self._validation_work_time_in_the_text()
         ## バリデーション。親タスクの時刻範囲に範囲に入っているか?
