@@ -82,6 +82,57 @@ def test_validation_began_ended_1_x99(
     assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
 
 
+@pytest.mark.parametrize(
+    "_test_id, text",
+    [
+        (
+            "n0101",
+            """\
+09:10-09:20 作業2
+09:00-09:10 作業1
+""",
+        ),
+        (
+            "n0102",
+            """\
+09:00-09:30 作業1
+	09:10-09:20 作業1-2
+	09:00-09:10 作業1-1
+""",
+        ),
+        (
+            "n0103",
+            """\
+09:10-09:20 作業1
+09:00 確認1
+""",
+        ),
+        # 途中にタスク以外
+        (
+            "n0201",
+            """\
+09:10-09:20 作業2
+テキスト1
+09:00-09:10 作業1
+""",
+        ),
+    ],
+)
+def test_validation_began_time_in_order_for_layer_x99(
+    _test_id: str,
+    text: str,
+) -> None:  # 正常
+    build = MhTaskBuild()
+    f = io.StringIO(text)
+    mht_list = build.task_read(f)
+    mht_list = build._build_task_tree(mht_list)
+    # 実行
+    validatior = Validator(mht_list=mht_list)
+    validatior._validation_began_time_in_order_for_layer()
+    # 検証
+    assert len(validatior.validation_error) != 0  # エラーの内容はチェックしない
+
+
 def test_validation_task_same_began_time_n0101() -> None:  # 正常
     text = """\
 09:00-09:10 作業1

@@ -70,6 +70,35 @@ class Validator:
                     )
                 )
 
+    def _validation_began_time_in_order_for_layer(self) -> None:
+        """バリデーション。タスクの順番が不正"""
+
+        def _validation_began_time_in_order_for_layer_local(mht_list: list[MhTask]) -> None:
+            # 順番を確認
+            mht1: Optional[MhTask] = None
+            for mht in mht_list:
+                if mht.began_time is None:
+                    continue
+                if mht1 is None:
+                    mht1 = mht
+                    continue
+                if mht.began_time < mht1.began_time:
+                    self.validation_error.append(
+                        ValidationError2(
+                            level=ERROR,
+                            message=f'タスクの順番が不正です。reasen="開始時刻が逆転"',
+                            mht1=mht1,
+                            mht2=mht,
+                        )
+                    )
+                mht1 = mht
+            # 下位レイヤを確認
+            for mht in mht_list:
+                _validation_began_time_in_order_for_layer_local(mht.child_task)
+
+        #
+        _validation_began_time_in_order_for_layer_local(self.mht_list)
+
     def _validation_task_same_began_time(self) -> None:
         """バリデーション。開始時刻,終了時刻が同じ"""
         for mht1 in MhTaskListIterable(self.mht_list):
@@ -215,6 +244,9 @@ class Validator:
         if check_validation_error(self.validation_error):
             return self.validation_error
 
+        # レイヤ単位
+        ## バリデーション。タスクの順番が不正
+        self._validation_began_time_in_order_for_layer()
         # 親子
         ## バリデーション。テキストに、作業時間がある
         self._validation_work_time_in_the_text()
