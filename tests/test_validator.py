@@ -39,6 +39,37 @@ def test__build_mht_parent_dict_n0101() -> None:
     assert result[id(mht_list[1])] == None
 
 
+@pytest.mark.parametrize(
+    "_test_id, text",
+    [
+        (
+            "a0101",  # 作業時間のみ
+            """\
+09:00-09:10 作業1
+    """,
+        ),
+        (
+            "a0102",  # タイムスタンプのみ
+            """\
+09:00-09:10 作業1
+	09:05 確認1
+	09:10 確認2
+    """,
+        ),
+    ],
+)
+def test_validation_x99(
+    _test_id: str,
+    text: str,
+) -> None:  # バリデーションエラーにならないことを確認
+    mht_list = make_testdata(text)
+    # 実行
+    validatior = Validator(mht_list=mht_list)
+    validatior.validation()
+    # 検証
+    assert len(validatior.validation_error) == 0
+
+
 def test_validation_began_ended_1_n0101() -> None:  # 正常
     text = """\
 09:00-09:10 作業1
