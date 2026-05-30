@@ -70,7 +70,12 @@ class DialogReorderPivotTable:
         self.frame2 = tk.Frame(self.root)
         self.frame2.pack(fill=tk.X)
 
-        tk.Label(self.frame2, text="チケットのURL:", anchor=tkinter.W).pack(anchor=tk.W)
+        self.frame21 = tk.Frame(self.frame2)
+        self.frame21.pack(fill=tk.X)
+
+        tk.Label(self.frame21, text="チケットのURL:").pack(side=tk.LEFT)
+        tk.Button(self.frame21, text="クリア", command=self.on_button_ticket_url_clear).pack(side=tk.LEFT)
+
         self.ticket_url_vbar = tk.Scrollbar(self.frame2, orient=tk.VERTICAL)
         self.ticket_url_vbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.ticket_url_textbox = tk.Text(self.frame2, height=10, yscrollcommand=self.ticket_url_vbar.set)
@@ -130,3 +135,6 @@ class DialogReorderPivotTable:
         self.root.clipboard_append(s)
         #
         self.result_textbox.insert(tk.END, "結果をクリップボードにコピーしました。\n")
+
+    def on_button_ticket_url_clear(self) -> None:
+        self.ticket_url_textbox.delete("1.0", tk.END)
