@@ -151,10 +151,12 @@ class MhTaskCategorize:
             else:
                 o_stream.write(f"{task_date_column}{mht.line_text}\t\t{mht.task_time}\n")
         o_stream.write("\t====チケット作業====\n")
-        # 集計項目の出力
-        for k, v in ticket_dict.items():
+        # 集計項目の出力。チケット番号順に出力
+        for k in sorted(ticket_dict.keys()):
+            v = ticket_dict[k]
             o_stream.write(f"{task_date_column}{'チケット;担当'}\t{k}\t{v}\n")
-        for k, v in ticket_review_dict.items():
+        for k in sorted(ticket_review_dict.keys()):
+            v = ticket_review_dict[k]
             o_stream.write(f"{task_date_column}{'チケット;レビュー'}\t{k}\t{v}\n")
 
     def task_add_tag(
