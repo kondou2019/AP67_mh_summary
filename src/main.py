@@ -53,6 +53,11 @@ class MainWindow:
         #
         self.mht_list: list[MhTask] = []
 
+    def clipboard_copy(self, s) -> None:
+        # クリップボードにコピー
+        self.root.clipboard_clear()
+        self.root.clipboard_append(s)
+
     def set_title(self, *, file_name: Optional[str] = None) -> None:
         if file_name is not None:
             s = Path(file_name).name
@@ -158,15 +163,24 @@ class MainWindow:
                 label="開始時間でソートの貼り付け", command=self.on_menu_tool_sort_began_time_paste_click
             )
             menu_tool.add_separator()
+
             menu_tool.add_command(label="tag_configの検証...", command=self.on_menu_tool_tag_config_verify_click)
             menu_tool.add_separator()
+
+            menu_tool_json = tkinter.Menu(menu, tearoff=0)
+            menu_tool.add_cascade(label="json出力", menu=menu_tool_json)
+            menu_tool_json.add_command(label="ファイル出力...", command=self.on_menu_tool_json_file_write_click)
+            menu_tool_json.add_command(
+                label="クリップボードにコピー", command=self.on_menu_tool_json_clipboard_write_click
+            )
+            menu_tool.add_separator()
+
             menu_tool.add_command(label="設定ファイルを開く", command=self.on_menu_tool_open_config_click)
             menu.add_cascade(label="ツール(T)", menu=menu_tool)
 
             ## Debug
             menu_debug = tkinter.Menu(menu, tearoff=0)
-            menu_debug.add_command(label="パース結果の貼り付け", command=self.on_menu_debug_paste_mht_list_click)
-            menu_debug.add_command(label="jsonの貼り付け", command=self.on_menu_debug_paste_json_click)
+            menu_debug.add_command(label="パース結果をコピー", command=self.on_menu_debug_copy_mht_list_click)
             menu.add_cascade(label="デバッグ(G)", menu=menu_debug)
 
             ## Help
@@ -238,18 +252,10 @@ class MainWindow:
     # ==================#
     # GUIイベント(menu) #
     # ==================#
-    def on_menu_debug_paste_json_click(self) -> None:
-        json_list = [asdict(x, dict_factory=mhtask_dict_factory) for x in self.mht_list]
-        s = json.dumps(json_list, indent=2, ensure_ascii=False)
-        # クリップボードに貼り付け
-        self.root.clipboard_clear()
-        self.root.clipboard_append(s)
-
-    def on_menu_debug_paste_mht_list_click(self) -> None:
+    def on_menu_debug_copy_mht_list_click(self) -> None:
         s = format_mht_list(self.mht_list, output_task_time=True)
-        # クリップボードに貼り付け
-        self.root.clipboard_clear()
-        self.root.clipboard_append(s)
+        # クリップボードにコピー
+        self.clipboard_copy(s)
 
     def on_menu_file_exit_click(self) -> None:
         self.root.destroy()
@@ -292,6 +298,33 @@ class MainWindow:
     def on_menu_help_about_click(self) -> None:
         messagebox.showinfo("バージョン情報", f"mh_summary {__VERSION__}")
 
+    def on_menu_tool_json_clipboard_write_click(self) -> None:
+        if len(self.mht_list) == 0:
+            return
+        # json文字列の作成
+        json_list = [asdict(x, dict_factory=mhtask_dict_factory) for x in self.mht_list]
+        json_str = json.dumps(json_list, indent=2, ensure_ascii=False)
+        # クリップボードにコピー
+        self.clipboard_copy(json_str)
+
+    def on_menu_tool_json_file_write_click(self) -> None:
+        if len(self.mht_list) == 0:
+            return
+        # json文字列の作成
+        json_list = [asdict(x, dict_factory=mhtask_dict_factory) for x in self.mht_list]
+        json_str = json.dumps(json_list, indent=2, ensure_ascii=False)
+        # 出力ファイル名の選択
+        file_path_s = filedialog.asksaveasfilename(
+            title=".jsonファイルの出力先",
+            filetypes=[("JSON", ".json"), ("全て", "*")],  # ファイルフィルタ
+        )
+        if file_path_s == "" or file_path_s == ():
+            return
+        # ファイル出力
+        with open(file_path_s, mode="w", encoding="utf-8") as f:
+            f.write(json_str)
+        pass
+
     def on_menu_tool_open_config_click(self) -> None:
         subprocess.Popen(["notepad", self.config_path_s])
 
@@ -299,14 +332,13 @@ class MainWindow:
         DialogReorderPivotTable.show_dialog(self.root)
 
     def on_menu_tool_sort_began_time_paste_click(self) -> None:
-        if self.mht_list is None:
+        if len(self.mht_list) == 0:
             return
         ts = MhTaskSort()
         sort_mht_list = ts.sort_began_time(self.mht_list)
         s = ts.format_began_time(sort_mht_list)
-        # クリップボードに出力
-        self.root.clipboard_clear()
-        self.root.clipboard_append(s)
+        # クリップボードにコピー
+        self.clipboard_copy(s)
 
     def on_menu_tool_tag_config_verify_click(self) -> None:
         DialogTagConfigVerify.show_dialog(self.root)
@@ -316,9 +348,8 @@ class MainWindow:
     # ====================#
     def on_button_copy(self) -> None:
         s = self.task_textbox.get("1.0", tk.END)
-        # クリップボードに出力
-        self.root.clipboard_clear()
-        self.root.clipboard_append(s)
+        # クリップボードにコピー
+        self.clipboard_copy(s)
 
     def on_button_exec(self) -> None:
         # クリップボードから取得
