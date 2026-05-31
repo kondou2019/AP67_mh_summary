@@ -105,6 +105,14 @@ def mhtask_dict_factory(items: list[tuple[str, Any]]) -> dict[str, Any]:
     return adict
 
 
+@dataclass(kw_only=True)
+class WindowGeometry:
+    width: int = 0
+    height: int = 0
+    x: int = 0
+    y: int = 0
+
+
 @dataclass
 class TagEntry:
     task_type: str = ""
@@ -125,6 +133,7 @@ class TagGroup:
 @dataclass
 class Config:
     version: str = ""
+    main_window_geometry: WindowGeometry = field(default_factory=WindowGeometry)
     tag_config: Optional[list[TagGroup]] = None
 
 

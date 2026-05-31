@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+import datetime
 import io
 import json
+import os
+import shutil
 import subprocess
 import tkinter
 import tkinter as tk
@@ -15,6 +18,7 @@ from dacite import from_dict
 
 from dialog_reorder_pivot_table import DialogReorderPivotTable
 from dialog_tag_config_verify import DialogTagConfigVerify
+from src.common import remove_none_keys
 from src.data_model import (
     Config,
     MhTask,
@@ -57,6 +61,31 @@ class MainWindow:
         # クリップボードにコピー
         self.root.clipboard_clear()
         self.root.clipboard_append(s)
+
+    def config_write(self):
+        self.config.version = __VERSION__
+        # ウィンド位置の更新
+        x = self.root.winfo_x()
+        y = self.root.winfo_y()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        self.config.main_window_geometry.width = width
+        self.config.main_window_geometry.height = height
+        self.config.main_window_geometry.x = x
+        self.config.main_window_geometry.y = y
+        # 設定ファイルをバックアップ
+        if self.config_path_s is None:
+            return
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = f"{self.config_path_s}.{timestamp}"
+        shutil.copy2(self.config_path_s, backup_path)
+        # 設定ファイル更新
+        json_dic = asdict(self.config)
+        remove_none_keys(json_dic)  # Noneのキーを削除
+        json_data = json.dumps(json_dic, indent=4, sort_keys=True, ensure_ascii=False)
+        with open(self.config_path_s, mode="w", encoding="utf-8") as f:
+            f.write(json_data)
+        pass
 
     def set_title(self, *, file_name: Optional[str] = None) -> None:
         if file_name is not None:
@@ -175,6 +204,9 @@ class MainWindow:
             )
             menu_tool.add_separator()
 
+            menu_tool.add_command(label="ウィンドサイズと位置を保存", command=self.on_menu_tool_save_windows_click)
+            menu_tool.add_separator()
+
             menu_tool.add_command(label="設定ファイルを開く", command=self.on_menu_tool_open_config_click)
             menu.add_cascade(label="ツール(T)", menu=menu_tool)
 
@@ -190,9 +222,16 @@ class MainWindow:
 
             self.root.config(menu=menu)
 
+        #
         self.root = tk.Tk()
         self.set_title()
-        self.root.geometry("576x576")
+
+        if self.config.main_window_geometry.width == 0 and self.config.main_window_geometry.height == 0:
+            self.root.geometry("576x576")
+        else:
+            self.root.geometry(
+                f"{self.config.main_window_geometry.width}x{self.config.main_window_geometry.height}+{self.config.main_window_geometry.x}+{self.config.main_window_geometry.y}"
+            )
 
         create_menu()
 
@@ -330,6 +369,9 @@ class MainWindow:
 
     def on_menu_tool_reorder_pivot_click(self) -> None:
         DialogReorderPivotTable.show_dialog(self.root)
+
+    def on_menu_tool_save_windows_click(self) -> None:
+        self.config_write()
 
     def on_menu_tool_sort_began_time_paste_click(self) -> None:
         if len(self.mht_list) == 0:
