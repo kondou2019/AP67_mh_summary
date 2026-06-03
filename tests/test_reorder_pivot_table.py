@@ -49,6 +49,30 @@ TICKET-0001	1
     assert result == expeced_text
 
 
+def test_reorder_pivot_table_n0103() -> None:  # チケットURLにURL以外の指定
+    ticket_url_text = """\
+改善活動
+https://jira.abc.com/browse/TICKET-0002
+https://jira.abc.com/browse/TICKET-0001
+"""
+
+    pivot_table_text = """\
+TICKET-0001	1
+TICKET-0002	2
+改善活動	3
+"""
+
+    expeced_text = """\
+改善活動	3
+TICKET-0002	2
+TICKET-0001	1
+"""
+    #
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
+    assert result == expeced_text
+
+
 @pytest.mark.parametrize(
     "_test_id, ticket_url_text, pivot_table_text, expeced_text",
     [

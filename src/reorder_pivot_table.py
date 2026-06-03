@@ -53,9 +53,12 @@ class ReorderPivotTable:
             line = line.strip()
             if line == "":  # 空行?
                 continue
-            parse_result = urllib.parse.urlparse(line)
-            p = Path(parse_result.path)
-            ticket_id_list.append(p.name)
+            if line.startswith("http"):
+                parse_result = urllib.parse.urlparse(line)
+                p = Path(parse_result.path)
+                ticket_id_list.append(p.name)
+            else:
+                ticket_id_list.append(line)  # 全体を、チケットIDとして扱う
         # pivot_table_textを分解
         lines = pivot_table_text.splitlines()
         ## "行ラベル","総計"のインデックスを求める
