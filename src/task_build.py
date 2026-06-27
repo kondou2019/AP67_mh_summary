@@ -188,9 +188,10 @@ class MhTaskBuild:
 
     def _parse_time_to_time(
         self, line: str, *, mht: Optional[MhTask] = None
-    ) -> tuple[Optional[time], Optional[time], bool, str]:
+    ) -> tuple[bool, Optional[time], Optional[time], bool, str]:
         if mht is None:
             mht = MhTask()
+        mht.line_text = line
         #
         began_only = False
         began_time: Optional[time] = None
@@ -198,16 +199,16 @@ class MhTaskBuild:
         remnant = line
         # TEXT判定
         if len(line) > 1 and line[0] in ['"', "'", "#"]:
-            return (began_time, ended_time, began_only, remnant)
+            return (True, began_time, ended_time, began_only, remnant)
         # 時刻判定
         ## 4文字目が':'のときは、時刻ありとする。
         if line.startswith("-"):  # "-00:00"
             if len(line) <= 4 or line[3] != ":":
-                return (began_time, ended_time, began_only, remnant)
+                return (True, began_time, ended_time, began_only, remnant)
         else:
             ## 3文字目が':'のときは、時刻ありとする。
             if len(line) <= 3 or line[2] != ":":  # "00:00"
-                return (began_time, ended_time, began_only, remnant)
+                return (True, began_time, ended_time, began_only, remnant)
         # 開始時刻を省略
         if line.startswith("-"):  # "-00:00"
             line0 = line[1:]
@@ -225,7 +226,7 @@ class MhTaskBuild:
                         mht=mht,
                     )
                 )
-                return (None, None, False, "")
+                return (False, None, None, False, "")
         else:
             # 開始時刻
             result = re.match(r"^([01][0-9]|2[0-3]):[0-5][0-9]", line)
@@ -241,7 +242,7 @@ class MhTaskBuild:
                         mht=mht,
                     )
                 )
-                return (None, None, False, "")
+                return (False, None, None, False, "")
             # '-'の判定
             if line.startswith("-"):
                 line0 = line[1:]
@@ -262,7 +263,7 @@ class MhTaskBuild:
                                 mht=mht,
                             )
                         )
-                        return (None, None, False, "")
+                        return (False, None, None, False, "")
             elif line.startswith(" "):  # "00:00"。開始時刻のみ
                 began_only = True
         # 時刻とタイトルの区切り文字(スペース)のチェック
@@ -274,7 +275,7 @@ class MhTaskBuild:
                     mht=mht,
                 )
             )
-            return (None, None, False, "")
+            return (False, None, None, False, "")
         # 作業タイトル
         line = line.strip()
         if len(line) == 0:
@@ -285,9 +286,9 @@ class MhTaskBuild:
                     mht=mht,
                 )
             )
-            return (None, None, False, "")
+            return (False, None, None, False, "")
         remnant = line
-        return (began_time, ended_time, began_only, remnant)
+        return (True, began_time, ended_time, began_only, remnant)
 
     def _set_began_ended_default(self, mht_list: list[MhTask]) -> None:
         """開始・終了時刻の省略値を設定"""
@@ -367,7 +368,9 @@ class MhTaskBuild:
             if line.startswith("- "):
                 line = line[2:]
         # 開始時刻-終了時刻
-        mht.began_time, mht.ended_time, began_only, line = self._parse_time_to_time(line, mht=mht)
+        rc, mht.began_time, mht.ended_time, began_only, line = self._parse_time_to_time(line, mht=mht)
+        if rc == False:  # バリデーションエラー
+            return mht
         # テキスト
         line = line.strip(" ")  # スペースのみ削除
         mht.line_text = line

@@ -333,7 +333,7 @@ def test_parse_time_to_time_x9901(
     remnant_expected: str,
 ) -> None:
     build = MhTaskBuild()
-    began_time, ended_time, began_only, remnant = build._parse_time_to_time(val)
+    _rc, began_time, ended_time, began_only, remnant = build._parse_time_to_time(val)
     if began_expected is None:
         assert began_time is None
     else:
