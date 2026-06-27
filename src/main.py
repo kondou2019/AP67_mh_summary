@@ -107,15 +107,15 @@ class MainWindow:
             if isinstance(err, ValidationError):
                 if err.mht is not None and err.mht.location is not None:
                     # 2行出力
-                    msg_list.append(f"({err.mht.location.line_no}):{err.mht.get_line()}")
-                    msg_list.append(f"\t{getLevelName(err.level)}:{err.message}")
+                    msg_list.append(f"({err.mht.location.line_no}): {err.mht.get_line()}")
+                    msg_list.append(f"\t{getLevelName(err.level)}: {err.message}")
                 else:
                     # 1行出力
                     msg_list.append(str(err))
             elif isinstance(err, ValidationError2):
                 # 3行出力
-                msg_list.append(f"({err.mht1.location.line_no}):{err.mht1.get_line()}")
-                msg_list.append(f"({err.mht2.location.line_no}):{err.mht2.get_line()}")
+                msg_list.append(f"({err.mht1.location.line_no}): {err.mht1.get_line()}")
+                msg_list.append(f"({err.mht2.location.line_no}): {err.mht2.get_line()}")
                 msg_list.append(f"\t{getLevelName(err.level)}:{err.message}")
             else:
                 msg_list.append(str(err))
