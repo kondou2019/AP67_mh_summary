@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "src"
-version = "0.2.255"
+version = "0.3.0"
 description = ""
 authors = ["kondou <kondou@localdomain>"]
 readme = "README.md"
