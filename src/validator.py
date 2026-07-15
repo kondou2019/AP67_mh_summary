@@ -1,4 +1,4 @@
-from logging import ERROR
+from logging import ERROR, WARNING
 from typing import Optional
 
 from src.data_model import (
@@ -240,6 +240,21 @@ class Validator:
 
         def _validation_within_of_parent_time_range_local(mht: MhTask, began_m: int, ended_m: int) -> None:
             for mht0 in mht.child_task:
+                # TIMESTAMP は警告
+                if mht0.began_time is not None and mht0.ended_time is None:
+                    began0_m = calc_minute_of_day(mht0.began_time)
+                    if began_m <= began0_m <= ended_m:
+                        pass
+                    else:
+                        self.validation_error.append(
+                            ValidationError2(
+                                level=WARNING,
+                                message='親タスクの範囲外。reason="開始時刻"',
+                                mht1=mht0,
+                                mht2=mht,
+                            )
+                        )
+                    continue
                 # 開始時刻をチェック
                 if mht0.began_time is not None:
                     began0_m = calc_minute_of_day(mht0.began_time)
