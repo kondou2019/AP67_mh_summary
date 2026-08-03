@@ -300,26 +300,26 @@ class Validator:
     def validation(self) -> list[ValidationErrorBase]:
         """バリデーション"""
         # 1行単位
-        ## バリデーション。開始時刻,終了時刻が同じ
+        ## 開始時刻,終了時刻が同じ
         self._validation_task_same_began_time()
-        ## バリデーション。開始時刻,終了時刻(1行内)
+        ## 開始時刻,終了時刻(1行内)
         self._validation_began_ended_1()
         ## 中断
         if check_validation_error(self.validation_error):
             return self.validation_error
 
         # レイヤ単位
-        ## バリデーション。タスクの順番が不正
+        ## タスクの順番が不正
         self._validation_began_time_in_order_for_layer()
 
         # 親子
-        ## バリデーション。子タスクに不足はないか?
+        ## 子タスクに不足はないか?
         self._validation_enough_child_task()
-        ## バリデーション。テキストに、作業時間がある
+        ## テキストに、作業時間がある
         self._validation_work_time_in_the_text()
-        ## バリデーション。親タスクの時刻範囲に範囲に入っているか?
+        ## 親タスクの時刻範囲に範囲に入っているか?
         self._validation_within_of_parent_time_range()
-        ## バリデーション。作業時間の重複。リーフのみ対象。ブランチは重複する
+        ## 作業時間の重複。リーフのみ対象。ブランチは重複する
         self._validation_overlap()
 
         return self.validation_error
