@@ -38,10 +38,10 @@ class MhTask:
     began_time: Optional[time] = None
     ended_time: Optional[time] = None
     tag_dict: dict[str, str] = field(default_factory=dict)
-    line_text: str = ""
+    line_text_raw: str = ""  # 入力データ(加工前)
+    line_text: str = ""  # 入力データ(時刻部分を削除)
     task_type: str = ""
     record_type: MhTaskType = MhTaskType.UNKNOWN
-    tilte: str = ""
     child_task: list[Self] = field(default_factory=list)
     #
     task_time: int = 0  # 作業時間(分)
@@ -59,24 +59,6 @@ class MhTask:
         # 子要素を順に走査し、それぞれの中身も yield from で展開する
         for child in self.child_task:
             yield from child
-
-    def get_line(self) -> str:
-        """!
-        @brief 時刻付きの文字列を返す
-        """
-        time_str = ""
-        if self.record_type == MhTaskType.BEGAN_ENDED:
-            began_s = self.began_time.strftime("%H:%M")
-            if self.ended_time is not None:
-                ended_s = self.ended_time.strftime("%H:%M")
-            else:
-                ended_s = ""
-            time_str = f"{began_s}-{ended_s} "
-        elif self.record_type == MhTaskType.TIMESTAMP:
-            began_s = self.began_time.strftime("%H:%M")
-            time_str = f"{began_s} "
-        #
-        return f"{time_str}{self.line_text}"
 
 
 class MhTaskListIterable:
