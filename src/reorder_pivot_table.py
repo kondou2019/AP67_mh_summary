@@ -81,8 +81,8 @@ class ReorderPivotTable:
 
     def reorder_pivot_table(self, ticket_url_text: str, pivot_table_text: str) -> str:
         # ticket_url_textからチケットIDの一覧を作成
-        #ticket_id_list: list[str] = []
-        #for line in ticket_url_text.splitlines():
+        # ticket_id_list: list[str] = []
+        # for line in ticket_url_text.splitlines():
         #    #line = line.strip()
         #    if line == "":  # 空行?
         #        continue
@@ -103,17 +103,17 @@ class ReorderPivotTable:
             ticket_id = columns[0]
             body_dict[ticket_id] = line
         # 並び替え
-        reorder_body_list:list[str] = []
+        reorder_body_list: list[str] = []
         for line in ticket_url_text.splitlines():
-            columns = line.split('\t')
+            columns = line.split("\t")
             ticket_title = ""
             ticket_url = ""
             if len(columns) >= 2:
                 ticket_title = columns[0]
                 ticket_url = columns[1]
-            if ticket_title == "" and ticket_url == "": # 空行
+            if ticket_title == "" and ticket_url == "":  # 空行
                 reorder_body_list.append("")
-            elif ticket_title!= "" and ticket_url != "": # urlあり?
+            elif ticket_title != "" and ticket_url != "":  # urlあり?
                 parse_result = urllib.parse.urlparse(ticket_url)
                 p = Path(parse_result.path)
                 ticket_id = p.name
@@ -121,7 +121,7 @@ class ReorderPivotTable:
                     reorder_body_list.append(body_dict[ticket_id])
                     del body_dict[ticket_id]
                     pass
-            elif ticket_title != "" and ticket_url == "": # url無し?チケット外
+            elif ticket_title != "" and ticket_url == "":  # url無し?チケット外
                 if ticket_title in body_dict:
                     reorder_body_list.append(body_dict[ticket_title])
                     del body_dict[ticket_title]

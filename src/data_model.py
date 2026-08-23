@@ -113,9 +113,15 @@ class TagGroup:
 
 
 @dataclass
+class TaskNameNormalize:
+    name_alias_dict: dict[str, list[str]] = field(default_factory=dict)
+
+
+@dataclass
 class Config:
     version: str = ""
     main_window_geometry: WindowGeometry = field(default_factory=WindowGeometry)
+    task_name_normalize: Optional[TaskNameNormalize] = (None,)
     tag_config: Optional[list[TagGroup]] = None
 
 

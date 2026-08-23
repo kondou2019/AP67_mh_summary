@@ -167,7 +167,7 @@ class Validator:
                     self.validation_error.append(
                         ValidationError2(
                             level=ERROR,
-                            message=f'開始時刻が同じです。',
+                            message=f"開始時刻が同じです。",
                             mht1=mht1,
                             mht2=mht2,
                         )
@@ -176,7 +176,7 @@ class Validator:
                     self.validation_error.append(
                         ValidationError2(
                             level=ERROR,
-                            message=f'終了時刻が同じです。',
+                            message=f"終了時刻が同じです。",
                             mht1=mht1,
                             mht2=mht2,
                         )

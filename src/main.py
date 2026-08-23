@@ -30,6 +30,7 @@ from src.data_model import (
 )
 from src.task_build import MhTaskBuild
 from src.task_categorize import MhTaskCategorize
+from src.task_normalize import MhTaskNormalize
 from src.task_sort import MhTaskSort
 from src.task_utl import format_mht_list
 
@@ -145,6 +146,9 @@ class MainWindow:
         if check_validation_error(build.validation_error):
             self.update_problem_textbox(build.validation_error)
             return
+        ## タスク名の正規化
+        normalize = MhTaskNormalize()
+        normalize.task_name_normalize(mht_list, self.config)
         ##
         mht_list = build.task_summary(mht_list)
         if check_validation_error(build.validation_error):
@@ -164,7 +168,7 @@ class MainWindow:
         # 集計
         header = self.csv_header_var.get()
         f = io.StringIO(newline="")
-        #categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+        # categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
         categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
         s = f.getvalue()
         f.close()

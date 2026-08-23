@@ -1,5 +1,10 @@
 {
     "version": "0.0.0",
+    "task_name_normalize": {
+        "name_alias_dict": {
+            "作業1": ["作業１", "作業一"]
+        }
+    },
     "tag_config": [
         {
             "group_name": "ticket",

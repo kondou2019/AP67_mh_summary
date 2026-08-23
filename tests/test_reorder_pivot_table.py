@@ -72,7 +72,8 @@ TICKET-0001	1
     result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
     assert result == expeced_text
 
-def test_reorder_pivot_table_n0201() -> None: # チケット外
+
+def test_reorder_pivot_table_n0201() -> None:  # チケット外
     ticket_url_text = """\
 改善活動	
 チケット2	https://jira.abc.com/browse/TICKET-0002
@@ -95,7 +96,6 @@ TICKET-0002	407	6.783333	0	0	0	0
     pivot_table = ReorderPivotTable()
     result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
     # assert len(result) == 2
-
 
 
 @pytest.mark.parametrize(

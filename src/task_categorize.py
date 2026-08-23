@@ -167,8 +167,7 @@ class MhTaskCategorize:
         header: bool = True,
         task_date: Optional[str] = None,
     ) -> None:
-        """集計5 チケット外の作業を"チケット;担当"で出力
-        """
+        """集計5 チケット外の作業を"チケット;担当"で出力"""
         task_date_column = ""
         if task_date is not None:
             task_date_column = f"{task_date}\t"
