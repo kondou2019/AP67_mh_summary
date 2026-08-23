@@ -164,7 +164,8 @@ class MainWindow:
         # 集計
         header = self.csv_header_var.get()
         f = io.StringIO(newline="")
-        categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+        #categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+        categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
         s = f.getvalue()
         f.close()
         # 結果出力
