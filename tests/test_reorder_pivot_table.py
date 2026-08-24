@@ -78,6 +78,7 @@ def test_reorder_pivot_table_n0201() -> None:  # チケット外
 改善活動	
 チケット2	https://jira.abc.com/browse/TICKET-0002
 チケット1	https://jira.abc.com/browse/TICKET-0001
+チケット3	https://jira.abc.com/browse/TICKET-0003
 """
 
     pivot_table_text = """\

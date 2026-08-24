@@ -121,10 +121,14 @@ class ReorderPivotTable:
                     reorder_body_list.append(body_dict[ticket_id])
                     del body_dict[ticket_id]
                     pass
+                else:  # 担当外
+                    reorder_body_list.append("")
             elif ticket_title != "" and ticket_url == "":  # url無し?チケット外
                 if ticket_title in body_dict:
                     reorder_body_list.append(body_dict[ticket_title])
                     del body_dict[ticket_title]
+                else:  # 担当外
+                    reorder_body_list.append("")
             else:
                 # エラー;タイトルなし。URLあり。
                 pass
