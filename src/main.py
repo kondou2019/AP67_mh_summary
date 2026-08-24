@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import datetime
+import glob
 import io
 import json
 import os
@@ -186,6 +187,8 @@ class MainWindow:
             menu_file = tkinter.Menu(menu, tearoff=0)
             menu_file.add_command(label="開く(O)", command=self.on_menu_file_open_click)
             menu_file.add_command(label="再読込(R)", command=self.on_menu_file_reload_click)
+            menu_file.add_command(label="連続読込", command=self.on_menu_file_continuous_loading_click)
+            menu_file.add_separator()
             menu_file.add_command(label="開いたファイルをメモ帳で開く...", command=self.on_menu_file_notepad_open_click)
             menu_file.add_separator()
             menu_file.add_command(label="終了(E)", command=self.on_menu_file_exit_click)
@@ -303,6 +306,74 @@ class MainWindow:
 
     def on_menu_file_exit_click(self) -> None:
         self.root.destroy()
+
+    def on_menu_file_continuous_loading_click(self) -> None:
+        dir_path_s = "/home/localadmin/tmp4/AP67_mh_summary/tmp/2026/*"
+        start_name = "2026_08_01.md"
+        ended_name = "2026_08_02.md"
+        #
+        # 出力エリアをクリア
+        self.task_textbox.delete("1.0", tk.END)
+        self.problem_textbox.delete("1.0", tk.END)
+        #
+        files = glob.glob(dir_path_s)
+        # 昇順（小さい順）に並べ替え
+        sorted_files = sorted(files)
+        for full_path_s in sorted_files:
+            file_name = Path(full_path_s)
+            if start_name <= file_name.name <= ended_name:
+                pass
+            else:
+                continue
+            # 読み込み
+            with open(file_name, mode="r", encoding="utf-8") as f:
+                text = f.read()
+            #
+            # self.update_task_textbox(text, file_name=file_path_s)
+            # logseq 対応
+            task_date: Optional[str] = None
+            file_path = Path(file_name)
+            if file_path.suffix == ".md":
+                self.logseq_var.set(True)
+                # ファイル名から日付を取得。ex)2023_06_03.md
+                filename = file_path.stem
+                task_date = filename.replace("_", "/")
+            # 読み込み
+            build = MhTaskBuild()
+            f = io.StringIO(text)
+            mht_list = build.task_read(f, file_name=file_name, logseq=self.logseq_var.get())
+            if check_validation_error(build.validation_error):
+                self.update_problem_textbox(build.validation_error)
+                return
+            ## タスク名の正規化
+            normalize = MhTaskNormalize()
+            normalize.task_name_normalize(mht_list, self.config)
+            ##
+            mht_list = build.task_summary(mht_list)
+            if check_validation_error(build.validation_error):
+                self.update_problem_textbox(build.validation_error)
+                return
+            # タグを付与
+            categorize = MhTaskCategorize(config=self.config)
+            categorize.task_add_tag(mht_list)
+            if check_validation_error(categorize.validation_error):
+                self.update_problem_textbox(categorize.validation_error)
+                return
+            ## バリデーションエラー(I,W)出力
+            self.update_problem_textbox(categorize.validation_error)
+            self.mht_list = mht_list
+            # 集計
+            header = self.csv_header_var.get()
+            f = io.StringIO(newline="")
+            # categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+            categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
+            s = f.getvalue()
+            f.close()
+            #
+            # 結果出力
+            self.task_textbox.insert(tk.END, s)
+            pass
+        pass
 
     def on_menu_file_open_click(self) -> None:
         file_path_s = filedialog.askopenfilename(
