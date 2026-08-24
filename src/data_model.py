@@ -121,7 +121,7 @@ class TaskNameNormalize:
 class Config:
     version: str = ""
     main_window_geometry: WindowGeometry = field(default_factory=WindowGeometry)
-    task_name_normalize: Optional[TaskNameNormalize] = (None,)
+    task_name_normalize: Optional[TaskNameNormalize] = None
     tag_config: Optional[list[TagGroup]] = None
 
 
