@@ -31,13 +31,11 @@ class MhTaskNormalize:
         """
         if config.task_name_normalize is None:
             return
-        # TaskNameNormalizeを辞書に変換
-        normalize_dict: dict[str] = {}  # k:値, v:正規化したタスク名
+        #
         for k, v in config.task_name_normalize.name_alias_dict.items():
             for v0 in v:
-                normalize_dict[v0] = k
-        #
-        for mht in mht_list:
-            if mht.line_text in normalize_dict:
-                mht.line_text = normalize_dict[mht.line_text]
-        pass
+                regex = re.compile(v0)
+                for mht in mht_list:
+                    result = regex.search(mht.line_text)
+                    if result is not None:
+                        mht.line_text = k
