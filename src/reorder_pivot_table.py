@@ -1,11 +1,13 @@
 import collections
 import io
+import re
 import urllib
 from logging import ERROR, WARNING
 from pathlib import Path
 from typing import Optional
 
 from src.data_model import (
+    Config,
     ValidationError,
     ValidationErrorBase,
     check_validation_error,
@@ -14,8 +16,11 @@ from src.data_model import (
 
 class ReorderPivotTable:
 
-    def __init__(self):
+    def __init__(self, *, config: Config = None):
         self.validation_error: list[ValidationErrorBase] = []
+        if config is None:
+            config = Config()
+        self.config = config
         pass
 
     def validation(self, ticket_id_list: list[str], body_dict: dict[str, str] = {}) -> None:
@@ -80,21 +85,6 @@ class ReorderPivotTable:
         return (header_list, body_list, footer_list)
 
     def reorder_pivot_table(self, ticket_url_text: str, pivot_table_text: str) -> str:
-        # ticket_url_textからチケットIDの一覧を作成
-        # ticket_id_list: list[str] = []
-        # for line in ticket_url_text.splitlines():
-        #    #line = line.strip()
-        #    if line == "":  # 空行?
-        #        continue
-        #    columns = line.split('\t')
-        #    ticket_url = columns[1]
-        #    if ticket_url.startswith("http"):
-        #        parse_result = urllib.parse.urlparse(ticket_url)
-        #        p = Path(parse_result.path)
-        #        ticket_id_list.append(p.name)
-        #    else:
-        #        ticket_id_list.append(ticket_url)  # 全体を、チケットIDとして扱う
-        # pivot_table_textを分解
         header_list, body_list, footer_list = self.pivot_table_separate(pivot_table_text)
         # body_listをチケットIDで辞書化
         body_dict: dict[str, str] = {}
@@ -134,7 +124,21 @@ class ReorderPivotTable:
                 pass
             pass
         # ticker_url_textの不足
+        require_title_re = ""
+        if self.config.setting is not None:
+            if self.config.setting.setting_reorder_pivot_table is not None:
+                require_title_re = self.config.setting.setting_reorder_pivot_table.require_title_re
         for k in body_dict.keys():
+            if require_title_re != "":
+                result = re.match(require_title_re, k)
+                if result:  # none以外の場合
+                    self.validation_error.append(
+                        ValidationError(
+                            level=ERROR,
+                            message=f'チケットURLが不足。value="{k}"',
+                        )
+                    )
+                    continue
             self.validation_error.append(
                 ValidationError(
                     level=WARNING,

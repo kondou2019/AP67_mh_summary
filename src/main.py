@@ -460,7 +460,7 @@ class MainWindow:
         subprocess.Popen(["notepad", self.config_path_s])
 
     def on_menu_tool_reorder_pivot_click(self) -> None:
-        DialogReorderPivotTable.show_dialog(self.root)
+        DialogReorderPivotTable.show_dialog(self.root, config=self.config)
 
     def on_menu_tool_save_windows_click(self) -> None:
         self.config_write()

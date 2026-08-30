@@ -6,6 +6,16 @@
             "sprint planning": ["^sprint planning;*"]
         }
     },
+    "setting": {
+        "task_file_dir": "/tmp/task_file/*",
+        "setting_continuous_loading": {
+            "start_name": "2026_08_01.md",
+            "ended_name": "2026_08_02.md"
+        },
+        "setting_reorder_pivot_table": {
+            "require_title_re":"^チケット*"
+        }
+    },
     "tag_config": [
         {
             "group_name": "ticket",

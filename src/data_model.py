@@ -124,9 +124,15 @@ class SettingContinuousLoading:
 
 
 @dataclass
+class SettingReorderPivotTable:
+    require_title_re: str = ""
+
+
+@dataclass
 class Setting:
     task_file_dir: str = ""
     setting_continuous_loading: Optional[SettingContinuousLoading] = None
+    setting_reorder_pivot_table: Optional[SettingReorderPivotTable] = None
 
 
 @dataclass
