@@ -17,6 +17,7 @@ from typing import Optional
 import click
 from dacite import from_dict
 
+from dialog_open_file_range import DialogOpenFileRange
 from dialog_reorder_pivot_table import DialogReorderPivotTable
 from dialog_tag_config_verify import DialogTagConfigVerify
 from src.common import remove_none_keys
@@ -308,10 +309,25 @@ class MainWindow:
         self.root.destroy()
 
     def on_menu_file_continuous_loading_click(self) -> None:
-        dir_path_s = "/home/localadmin/tmp4/AP67_mh_summary/tmp/2026/*"
-        start_name = "2026_08_01.md"
-        ended_name = "2026_08_02.md"
-        #
+        dir_path_s: str = ""
+        start_name: str = ""
+        ended_name: str = ""
+        if self.config.setting is not None:
+            dir_path_s = self.config.setting.task_file_dir
+            if self.config.setting.setting_continuous_loading is not None:
+                start_name = self.config.setting.setting_continuous_loading.start_name
+                ended_name = self.config.setting.setting_continuous_loading.ended_name
+        # ダイアログ表示
+        dlg = DialogOpenFileRange.create(self.root)
+        dlg.m_directory = dir_path_s
+        dlg.m_start_filename = start_name
+        dlg.m_ended_filename = ended_name
+        b = dlg.show_dialog(self.root)
+        if b == False:
+            return
+        dir_path_s = dlg.m_directory
+        start_name = dlg.m_start_filename
+        ended_name = dlg.m_ended_filename
         # 出力エリアをクリア
         self.task_textbox.delete("1.0", tk.END)
         self.problem_textbox.delete("1.0", tk.END)

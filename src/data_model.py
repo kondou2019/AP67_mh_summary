@@ -118,8 +118,21 @@ class TaskNameNormalize:
 
 
 @dataclass
+class SettingContinuousLoading:
+    start_name: str = ""
+    ended_name: str = ""
+
+
+@dataclass
+class Setting:
+    task_file_dir: str = ""
+    setting_continuous_loading: Optional[SettingContinuousLoading] = None
+
+
+@dataclass
 class Config:
     version: str = ""
+    setting: Optional[Setting] = None
     main_window_geometry: WindowGeometry = field(default_factory=WindowGeometry)
     task_name_normalize: Optional[TaskNameNormalize] = None
     tag_config: Optional[list[TagGroup]] = None
