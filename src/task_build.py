@@ -191,6 +191,7 @@ class MhTaskBuild:
     ) -> tuple[bool, Optional[time], Optional[time], bool, str]:
         if mht is None:
             mht = MhTask()
+        mht.line_text_raw = line
         mht.line_text = line
         #
         began_only = False

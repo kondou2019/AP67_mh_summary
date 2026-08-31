@@ -3,6 +3,7 @@ import tkinter as tk
 
 from reorder_pivot_table import ReorderPivotTable
 from src.data_model import (
+    Config,
     ValidationError,
     ValidationErrorBase,
     check_validation_error,
@@ -15,8 +16,8 @@ class DialogReorderPivotTable:
     """
 
     @classmethod
-    def show_dialog(cls, parent):
-        dlg_modal = DialogReorderPivotTable(parent=parent)
+    def show_dialog(cls, parent, *, config: Config = None):
+        dlg_modal = DialogReorderPivotTable(parent=parent, config=config)
         # モーダルにする設定
         dlg_modal.root.transient(parent)  # タスクバーに表示しない
         dlg_modal.root.focus_set()  # フォーカスを新しいウィンドウをへ移す
@@ -25,8 +26,9 @@ class DialogReorderPivotTable:
         parent.wait_window(dlg_modal.root)
         return
 
-    def __init__(self, *, parent):
+    def __init__(self, *, parent, config: Config = None):
         self.root = tk.Toplevel(parent)
+        self.config = config
         self.MainWindow_load()
 
     def update_result_textbox(self, validation_error: list[ValidationErrorBase]) -> None:
@@ -122,7 +124,7 @@ class DialogReorderPivotTable:
         ticket_url_text = self.ticket_url_textbox.get("1.0", tk.END)
         pivot_table_text = self.pivot_table_textbox.get("1.0", tk.END)
         # 並び替え
-        pivot_table = ReorderPivotTable()
+        pivot_table = ReorderPivotTable(config=self.config)
         s = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
         if check_validation_error(pivot_table.validation_error):
             self.update_result_textbox(pivot_table.validation_error)

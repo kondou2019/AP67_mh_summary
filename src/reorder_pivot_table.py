@@ -1,11 +1,13 @@
 import collections
 import io
+import re
 import urllib
 from logging import ERROR, WARNING
 from pathlib import Path
 from typing import Optional
 
 from src.data_model import (
+    Config,
     ValidationError,
     ValidationErrorBase,
     check_validation_error,
@@ -14,8 +16,11 @@ from src.data_model import (
 
 class ReorderPivotTable:
 
-    def __init__(self):
+    def __init__(self, *, config: Config = None):
         self.validation_error: list[ValidationErrorBase] = []
+        if config is None:
+            config = Config()
+        self.config = config
         pass
 
     def validation(self, ticket_id_list: list[str], body_dict: dict[str, str] = {}) -> None:
@@ -46,19 +51,10 @@ class ReorderPivotTable:
             )
         pass
 
-    def reorder_pivot_table(self, ticket_url_text: str, pivot_table_text: str) -> str:
-        # ticket_url_textからチケットIDの一覧を作成
-        ticket_id_list: list[str] = []
-        for line in ticket_url_text.splitlines():
-            line = line.strip()
-            if line == "":  # 空行?
-                continue
-            if line.startswith("http"):
-                parse_result = urllib.parse.urlparse(line)
-                p = Path(parse_result.path)
-                ticket_id_list.append(p.name)
-            else:
-                ticket_id_list.append(line)  # 全体を、チケットIDとして扱う
+    def pivot_table_separate(self, pivot_table_text: str) -> tuple[list[str], list[str], list[str]]:
+        """!
+        @brief ピボットテーブルの集計をヘッダ,ボディ,フッタに分解する
+        """
         # pivot_table_textを分解
         lines = pivot_table_text.splitlines()
         ## "行ラベル","総計"のインデックスを求める
@@ -85,32 +81,82 @@ class ReorderPivotTable:
             body_list = lines[label_index + 1 :]
         elif label_index is None and total_index is not None:
             body_list = lines[:total_index]
-        ## 並べ替え出力
-        ### body_listをチケットIDで辞書化
+
+        return (header_list, body_list, footer_list)
+
+    def reorder_pivot_table(self, ticket_url_text: str, pivot_table_text: str) -> str:
+        header_list, body_list, footer_list = self.pivot_table_separate(pivot_table_text)
+        # body_listをチケットIDで辞書化
         body_dict: dict[str, str] = {}
         for line in body_list:
             columns = line.split("\t")
             ticket_id = columns[0]
             body_dict[ticket_id] = line
-        ### バリデーション
-        self.validation(ticket_id_list, body_dict)
-        if check_validation_error(self.validation_error):
-            return ""
-        ### 出力
+        # 並び替え
+        reorder_body_list: list[str] = []
+        for line in ticket_url_text.splitlines():
+            columns = line.split("\t")
+            ticket_title = ""
+            ticket_url = ""
+            if len(columns) >= 2:
+                ticket_title = columns[0]
+                ticket_url = columns[1]
+            if ticket_title == "" and ticket_url == "":  # 空行
+                reorder_body_list.append("")
+            elif ticket_title != "" and ticket_url != "":  # urlあり?
+                parse_result = urllib.parse.urlparse(ticket_url)
+                p = Path(parse_result.path)
+                ticket_id = p.name
+                if ticket_id in body_dict:
+                    reorder_body_list.append(body_dict[ticket_id])
+                    del body_dict[ticket_id]
+                    pass
+                else:  # 担当外
+                    reorder_body_list.append("")
+            elif ticket_title != "" and ticket_url == "":  # url無し?チケット外
+                if ticket_title in body_dict:
+                    reorder_body_list.append(body_dict[ticket_title])
+                    del body_dict[ticket_title]
+                else:  # 担当外
+                    reorder_body_list.append("")
+            else:
+                # エラー;タイトルなし。URLあり。
+                pass
+            pass
+        # ticker_url_textの不足
+        require_title_re = ""
+        if self.config.setting is not None:
+            if self.config.setting.setting_reorder_pivot_table is not None:
+                require_title_re = self.config.setting.setting_reorder_pivot_table.require_title_re
+        for k in body_dict.keys():
+            if require_title_re != "":
+                result = re.match(require_title_re, k)
+                if result:  # none以外の場合
+                    self.validation_error.append(
+                        ValidationError(
+                            level=ERROR,
+                            message=f'チケットURLが不足。value="{k}"',
+                        )
+                    )
+                    continue
+            self.validation_error.append(
+                ValidationError(
+                    level=WARNING,
+                    message=f'チケットURLが不足。value="{k}"',
+                )
+            )
+
+        # 出力
         f = io.StringIO(newline="")
-        #### ヘッダ出力
+        ## ヘッダ出力
         for line in header_list:
             f.write(line)
             f.write("\n")  # 改行
-        #### ボディ出力
-        for ticket_id in ticket_id_list:
-            if ticket_id in body_dict:
-                f.write(body_dict[ticket_id])
-                f.write("\n")  # 改行
-            else:
-                f.write(f"{ticket_id}\n")  # IDだけ出力
-            pass
-        #### フッタ出力
+        ## ボディ出力
+        for line in reorder_body_list:
+            f.write(line)
+            f.write("\n")  # 改行
+        ## フッタ出力
         for line in footer_list:
             f.write(line)
             f.write("\n")  # 改行

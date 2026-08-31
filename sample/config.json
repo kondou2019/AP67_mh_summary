@@ -1,5 +1,21 @@
 {
     "version": "0.0.0",
+    "task_name_normalize": {
+        "name_alias_dict": {
+            "作業1": ["作業１", "作業一"],
+            "sprint planning": ["^sprint planning;*"]
+        }
+    },
+    "setting": {
+        "task_file_dir": "/tmp/task_file/*",
+        "setting_continuous_loading": {
+            "start_name": "2026_08_01.md",
+            "ended_name": "2026_08_02.md"
+        },
+        "setting_reorder_pivot_table": {
+            "require_title_re":"^チケット*"
+        }
+    },
     "tag_config": [
         {
             "group_name": "ticket",
@@ -38,7 +54,7 @@
                         "pr_id": ";PR#\\s*(\\d+);"
                     },
                     "identifier_dict" : {
-                        "ticket_id": ";\\[(チケット.*?)\\]",
+                        "ticket_id": ";\\[(チケット.*?)\\]"
                     },
                     "tag_entry_dict": {
                         "レビュー": "",

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import datetime
+import glob
 import io
 import json
 import os
@@ -16,6 +17,7 @@ from typing import Optional
 import click
 from dacite import from_dict
 
+from dialog_open_file_range import DialogOpenFileRange
 from dialog_reorder_pivot_table import DialogReorderPivotTable
 from dialog_tag_config_verify import DialogTagConfigVerify
 from src.common import remove_none_keys
@@ -30,6 +32,7 @@ from src.data_model import (
 )
 from src.task_build import MhTaskBuild
 from src.task_categorize import MhTaskCategorize
+from src.task_normalize import MhTaskNormalize
 from src.task_sort import MhTaskSort
 from src.task_utl import format_mht_list
 
@@ -107,15 +110,15 @@ class MainWindow:
             if isinstance(err, ValidationError):
                 if err.mht is not None and err.mht.location is not None:
                     # 2行出力
-                    msg_list.append(f"({err.mht.location.line_no}): {err.mht.get_line()}")
+                    msg_list.append(f"({err.mht.location.line_no}): {err.mht.line_text_raw}")
                     msg_list.append(f"\t{getLevelName(err.level)}: {err.message}")
                 else:
                     # 1行出力
                     msg_list.append(str(err))
             elif isinstance(err, ValidationError2):
                 # 3行出力
-                msg_list.append(f"({err.mht1.location.line_no}): {err.mht1.get_line()}")
-                msg_list.append(f"({err.mht2.location.line_no}): {err.mht2.get_line()}")
+                msg_list.append(f"({err.mht1.location.line_no}): {err.mht1.line_text_raw}")
+                msg_list.append(f"({err.mht2.location.line_no}): {err.mht2.line_text_raw}")
                 msg_list.append(f"\t{getLevelName(err.level)}:{err.message}")
             else:
                 msg_list.append(str(err))
@@ -145,6 +148,9 @@ class MainWindow:
         if check_validation_error(build.validation_error):
             self.update_problem_textbox(build.validation_error)
             return
+        ## タスク名の正規化
+        normalize = MhTaskNormalize()
+        normalize.task_name_normalize(mht_list, self.config)
         ##
         mht_list = build.task_summary(mht_list)
         if check_validation_error(build.validation_error):
@@ -164,7 +170,8 @@ class MainWindow:
         # 集計
         header = self.csv_header_var.get()
         f = io.StringIO(newline="")
-        categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+        # categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+        categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
         s = f.getvalue()
         f.close()
         # 結果出力
@@ -181,6 +188,8 @@ class MainWindow:
             menu_file = tkinter.Menu(menu, tearoff=0)
             menu_file.add_command(label="開く(O)", command=self.on_menu_file_open_click)
             menu_file.add_command(label="再読込(R)", command=self.on_menu_file_reload_click)
+            menu_file.add_command(label="連続読込", command=self.on_menu_file_continuous_loading_click)
+            menu_file.add_separator()
             menu_file.add_command(label="開いたファイルをメモ帳で開く...", command=self.on_menu_file_notepad_open_click)
             menu_file.add_separator()
             menu_file.add_command(label="終了(E)", command=self.on_menu_file_exit_click)
@@ -299,6 +308,89 @@ class MainWindow:
     def on_menu_file_exit_click(self) -> None:
         self.root.destroy()
 
+    def on_menu_file_continuous_loading_click(self) -> None:
+        dir_path_s: str = ""
+        start_name: str = ""
+        ended_name: str = ""
+        if self.config.setting is not None:
+            dir_path_s = self.config.setting.task_file_dir
+            if self.config.setting.setting_continuous_loading is not None:
+                start_name = self.config.setting.setting_continuous_loading.start_name
+                ended_name = self.config.setting.setting_continuous_loading.ended_name
+        # ダイアログ表示
+        dlg = DialogOpenFileRange.create(self.root)
+        dlg.m_directory = dir_path_s
+        dlg.m_start_filename = start_name
+        dlg.m_ended_filename = ended_name
+        b = dlg.show_dialog(self.root)
+        if b == False:
+            return
+        dir_path_s = dlg.m_directory
+        start_name = dlg.m_start_filename
+        ended_name = dlg.m_ended_filename
+        # 出力エリアをクリア
+        self.task_textbox.delete("1.0", tk.END)
+        self.problem_textbox.delete("1.0", tk.END)
+        #
+        files = glob.glob(dir_path_s)
+        # 昇順（小さい順）に並べ替え
+        sorted_files = sorted(files)
+        for full_path_s in sorted_files:
+            file_name = Path(full_path_s)
+            if start_name <= file_name.name <= ended_name:
+                pass
+            else:
+                continue
+            # 読み込み
+            with open(file_name, mode="r", encoding="utf-8") as f:
+                text = f.read()
+            #
+            # self.update_task_textbox(text, file_name=file_path_s)
+            # logseq 対応
+            task_date: Optional[str] = None
+            file_path = Path(file_name)
+            if file_path.suffix == ".md":
+                self.logseq_var.set(True)
+                # ファイル名から日付を取得。ex)2023_06_03.md
+                filename = file_path.stem
+                task_date = filename.replace("_", "/")
+            # 読み込み
+            build = MhTaskBuild()
+            f = io.StringIO(text)
+            mht_list = build.task_read(f, file_name=file_name, logseq=self.logseq_var.get())
+            if check_validation_error(build.validation_error):
+                self.update_problem_textbox(build.validation_error)
+                return
+            ## タスク名の正規化
+            normalize = MhTaskNormalize()
+            normalize.task_name_normalize(mht_list, self.config)
+            ##
+            mht_list = build.task_summary(mht_list)
+            if check_validation_error(build.validation_error):
+                self.update_problem_textbox(build.validation_error)
+                return
+            # タグを付与
+            categorize = MhTaskCategorize(config=self.config)
+            categorize.task_add_tag(mht_list)
+            if check_validation_error(categorize.validation_error):
+                self.update_problem_textbox(categorize.validation_error)
+                return
+            ## バリデーションエラー(I,W)出力
+            self.update_problem_textbox(categorize.validation_error)
+            self.mht_list = mht_list
+            # 集計
+            header = self.csv_header_var.get()
+            f = io.StringIO(newline="")
+            # categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
+            categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
+            s = f.getvalue()
+            f.close()
+            #
+            # 結果出力
+            self.task_textbox.insert(tk.END, s)
+            pass
+        pass
+
     def on_menu_file_open_click(self) -> None:
         file_path_s = filedialog.askopenfilename(
             title="タイトル",
@@ -368,7 +460,7 @@ class MainWindow:
         subprocess.Popen(["notepad", self.config_path_s])
 
     def on_menu_tool_reorder_pivot_click(self) -> None:
-        DialogReorderPivotTable.show_dialog(self.root)
+        DialogReorderPivotTable.show_dialog(self.root, config=self.config)
 
     def on_menu_tool_save_windows_click(self) -> None:
         self.config_write()
