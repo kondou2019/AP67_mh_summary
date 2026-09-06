@@ -1,7 +1,14 @@
-from typing import IO, Optional
+from logging import ERROR, WARNING
+from typing import IO, Optional, cast
 
 import pytest
 
+from src.data_model import (
+    Config,
+    ConfigSetting,
+    SettingReorderPivotTable,
+    ValidationError,
+)
 from src.reorder_pivot_table import ReorderPivotTable
 
 
@@ -82,21 +89,58 @@ def test_reorder_pivot_table_n0201() -> None:  # チケット外
 """
 
     pivot_table_text = """\
-	
-	
-	列ラベル
-	PRレビュー		チケット		チケット作成		ドキュメントレビュー		
-行ラベル	合計 / task_time	合計 / 作業時間	合計 / task_time	合計 / 作業時間	合計 / task_time	合計 / 作業時間
 改善活動	3
 TICKET-0001	407	6.783333	0	0	0	0
 TICKET-0002	407	6.783333	0	0	0	0
-総計	
-
-
 """
     pivot_table = ReorderPivotTable()
     result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
-    # assert len(result) == 2
+    assert len(pivot_table.validation_error) == 0  # バリデーションエラーなし
+    lines = result.splitlines()
+    assert len(lines) == 4
+
+
+def test_reorder_pivot_table_n0202() -> None:  # バリデーションエラー;チケット外が、urlに無い(警告)
+    ticket_url_text = """\
+改善活動	
+チケット2	https://jira.abc.com/browse/TICKET-0002
+チケット1	https://jira.abc.com/browse/TICKET-0001
+チケット3	https://jira.abc.com/browse/TICKET-0003
+"""
+
+    pivot_table_text = """\
+チケット外NG	3
+TICKET-0001	407	6.783333	0	0	0	0
+TICKET-0002	407	6.783333	0	0	0	0
+"""
+    pivot_table = ReorderPivotTable()
+    result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
+    assert len(pivot_table.validation_error) == 1
+    ve = cast(ValidationError, pivot_table.validation_error[0])
+    assert ve.level == WARNING
+
+
+def test_reorder_pivot_table_n0203() -> None:  # バリデーションエラー;チケット、urlに無い(ERROR)
+    ticket_url_text = """\
+チケット1	https://jira.abc.com/browse/TICKET-0001
+"""
+
+    pivot_table_text = """\
+TICKET-0001	407	6.783333	0	0	0	0
+TICKET-0002	407	6.783333	0	0	0	0
+"""
+    config = Config()
+    config.setting = ConfigSetting(
+        setting_reorder_pivot_table=SettingReorderPivotTable(
+            require_title_re="^TICKET*",
+        ),
+    )
+
+    pivot_table = ReorderPivotTable(config=config)
+    result = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
+    assert len(pivot_table.validation_error) == 1
+    ve = cast(ValidationError, pivot_table.validation_error[0])
+    assert ve.level == ERROR
 
 
 @pytest.mark.parametrize(

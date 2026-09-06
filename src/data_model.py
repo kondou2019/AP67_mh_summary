@@ -129,7 +129,7 @@ class SettingReorderPivotTable:
 
 
 @dataclass
-class Setting:
+class ConfigSetting:
     task_file_dir: str = ""
     setting_continuous_loading: Optional[SettingContinuousLoading] = None
     setting_reorder_pivot_table: Optional[SettingReorderPivotTable] = None
@@ -138,7 +138,7 @@ class Setting:
 @dataclass
 class Config:
     version: str = ""
-    setting: Optional[Setting] = None
+    setting: Optional[ConfigSetting] = None
     main_window_geometry: WindowGeometry = field(default_factory=WindowGeometry)
     task_name_normalize: Optional[TaskNameNormalize] = None
     tag_config: Optional[list[TagGroup]] = None

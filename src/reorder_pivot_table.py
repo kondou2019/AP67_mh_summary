@@ -10,7 +10,6 @@ from src.data_model import (
     Config,
     ValidationError,
     ValidationErrorBase,
-    check_validation_error,
 )
 
 
