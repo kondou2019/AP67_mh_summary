@@ -37,9 +37,11 @@ class DialogReorderPivotTable:
         """
         if len(validation_error) == 0:
             return
+        # バリデーションエラーをERRORを先頭に出力
+        validation_error_sort: list[ValidationErrorBase] = sorted(validation_error, key=lambda x: x.level, reverse=True)
         #
         msg_list: list[str] = []
-        for err in validation_error:
+        for err in validation_error_sort:
             if isinstance(err, ValidationError):
                 msg_list.append(str(err))
             else:
@@ -127,6 +129,7 @@ class DialogReorderPivotTable:
         pivot_table = ReorderPivotTable(config=self.config)
         s = pivot_table.reorder_pivot_table(ticket_url_text, pivot_table_text)
         if check_validation_error(pivot_table.validation_error):
+            ## バリデーションエラー(E)出力
             self.update_result_textbox(pivot_table.validation_error)
             return
         ## バリデーションエラー(I,W)出力
