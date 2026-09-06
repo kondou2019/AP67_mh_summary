@@ -36,7 +36,7 @@ from src.task_normalize import MhTaskNormalize
 from src.task_sort import MhTaskSort
 from src.task_utl import format_mht_list
 
-__VERSION__ = "0.3.255"
+__VERSION__ = "0.4.0"
 
 
 class MainWindow:
