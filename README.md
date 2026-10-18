@@ -31,3 +31,18 @@ ticket_id
 ```plaintext
 ';\\[(チケット.*?)\\]'
 ```
+
+## tag_dict
+
+"集計"タグ
+集計に出力するときの内容を指定する。
+"task_type","ticket_id"タグに内容を設定する。
+
+例)
+```plaintext
+"tag_dict": {
+    "集計": "",
+    "task_type": "チケット外",
+    "ticket_id": "教育"
+},
+```

@@ -86,6 +86,17 @@
             "group_name": "general",
             "tag_entry_list": [
                 {
+                    "task_type": "教育",
+                    "description": "",
+                    "sample": "教育;e-learning;ネットワーク",
+                    "match_re": "^教育;",
+                    "tag_entry_dict": {
+                        "集計": "",
+                        "task_type": "チケット外",
+                        "ticket_id": "教育"
+                    }
+                },
+                {
                     "task_type": "ドキュメントレビュー",
                     "match_re": "^ドキュメントレビュー;",
                     "description": "",

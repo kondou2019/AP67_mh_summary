@@ -149,6 +149,10 @@ class MhTaskCategorize:
                         ticket_dict[ticket_id] += mht.task_time
                     else:
                         ticket_dict[ticket_id] = mht.task_time
+            elif "集計" in mht.tag_dict:
+                o_stream.write(
+                    f"{task_date_column}{mht.tag_dict["task_type"]}\t{mht.tag_dict["ticket_id"]}\t{mht.task_time}\n"
+                )
             else:
                 o_stream.write(f"{task_date_column}{'チケット外'}\t{mht.line_text}\t{mht.task_time}\n")
         o_stream.write("\t====チケット作業====\n")
