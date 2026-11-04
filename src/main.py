@@ -30,6 +30,7 @@ from src.data_model import (
     check_validation_error,
     mhtask_dict_factory,
 )
+from src.task_aggregate import mh_task_print5
 from src.task_build import MhTaskBuild
 from src.task_categorize import MhTaskCategorize
 from src.task_normalize import MhTaskNormalize
@@ -170,7 +171,7 @@ class MainWindow:
         # 集計
         header = self.csv_header_var.get()
         f = io.StringIO(newline="")
-        categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
+        mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
         s = f.getvalue()
         f.close()
         # 結果出力
@@ -380,8 +381,7 @@ class MainWindow:
             # 集計
             header = self.csv_header_var.get()
             f = io.StringIO(newline="")
-            # categorize.mh_task_print4(mht_list, o_stream=f, header=header, task_date=task_date)
-            categorize.mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
+            mh_task_print5(mht_list, o_stream=f, header=header, task_date=task_date)
             s = f.getvalue()
             f.close()
             #
