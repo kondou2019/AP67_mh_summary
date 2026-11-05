@@ -2,8 +2,10 @@ from typing import Optional
 
 from src.data_model import (
     MhTask,
+    MhTaskListIterable,
     MhTaskType,
 )
+from src.task_utl import check_began_ended_leaf
 
 
 def mh_task_print6(mht_list: list[MhTask], o_stream, *, header: bool = True, task_date: str = "") -> None:
@@ -11,13 +13,19 @@ def mh_task_print6(mht_list: list[MhTask], o_stream, *, header: bool = True, tas
     # CSVヘッダ
     if header == True:
         o_stream.write("task_date\tbegan_time\tended_time\ttask_time\tticket_id\tprocess_type\tline_text\n")
-    # 集計;チケット
-    for mht in mht_list:
+    # 集計
+    ticket_id = ""
+    for mht in MhTaskListIterable(mht_list):
         if mht.record_type != MhTaskType.BEGAN_ENDED:
             continue
-        ticket_id = ""
-        if "チケット" in mht.tag_dict:
-            ticket_id = mht.tag_dict["チケット"]
+        # チケット識別子の取得。ルートタスクの時に更新
+        if mht in mht_list:  # ルートタスク?
+            ticket_id = ""
+            if "チケット" in mht.tag_dict:
+                ticket_id = mht.tag_dict["チケット"]
+        # リーフタスクのみ出力
+        if check_began_ended_leaf(mht) == False:
+            continue
         #
         assert mht.began_time is not None
         assert mht.ended_time is not None
