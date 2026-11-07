@@ -200,6 +200,10 @@ class MainWindow:
             menu_tool.add_command(
                 label="開始時間でソートの貼り付け", command=self.on_menu_tool_sort_began_time_paste_click
             )
+            menu_tool.add_command(
+                label="クリップボードの日付,開始時刻,終了時刻を一つの文字列に結合",
+                command=self.on_menu_tool_clipboard_date_time_click,
+            )
             menu_tool.add_separator()
 
             menu_tool.add_command(label="tag_configの検証...", command=self.on_menu_tool_tag_config_verify_click)
@@ -427,6 +431,16 @@ class MainWindow:
 
     def on_menu_help_about_click(self) -> None:
         messagebox.showinfo("バージョン情報", f"mh_summary {__VERSION__}")
+
+    def on_menu_tool_clipboard_date_time_click(self) -> None:
+        """クリップボードの日付,開始時刻,終了時刻を一つの文字列に結合する"""
+        # クリップボードから取得
+        text = self.root.clipboard_get()
+        # 日付\t開始時刻\t終了時刻を日付 開始時刻-終了時刻に加工
+        columns = text.split("\t")
+        s = f"{columns[0]} {columns[1]}-{columns[2]}"
+        # クリップボードにコピー
+        self.clipboard_copy(s)
 
     def on_menu_tool_json_clipboard_write_click(self) -> None:
         if len(self.mht_list) == 0:
