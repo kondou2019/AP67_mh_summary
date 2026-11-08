@@ -23,6 +23,8 @@ def mh_task_print6(mht_list: list[MhTask], o_stream, *, header: bool = True, tas
             ticket_id = ""
             if "チケット" in mht.tag_dict:
                 ticket_id = mht.tag_dict["チケット"]
+            else:
+                ticket_id = mht.line_text
         # リーフタスクのみ出力
         if check_began_ended_leaf(mht) == False:
             continue
