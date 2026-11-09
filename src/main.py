@@ -437,8 +437,18 @@ class MainWindow:
         # クリップボードから取得
         text = self.root.clipboard_get()
         # 日付\t開始時刻\t終了時刻を日付 開始時刻-終了時刻に加工
-        columns = text.split("\t")
-        s = f"{columns[0]} {columns[1]}-{columns[2]}"
+        lines = text.splitlines()
+        ## 1行目を解析
+        columns = lines[0].split("\t")
+        data_s = columns[0]
+        began_s = columns[1]
+        ended_s = columns[2]
+        ## 複数行の解析
+        if len(lines) > 1:  # 複数行
+            columns = lines[-1].split("\t")  # 最終行を分割
+            ended_s = columns[2]
+        ## 文字列の組み立て
+        s = f"{data_s} {began_s}-{ended_s}"
         # クリップボードにコピー
         self.clipboard_copy(s)
 
